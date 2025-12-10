@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 📚 RapidRide Documentation Index
 
 **Last Updated:** December 7, 2025
@@ -243,3 +244,7 @@ For issues or questions:
 **Project Status:** ✅ PRODUCTION READY  
 **Last Audit:** December 7, 2025  
 **Overall Score:** 95/100 (Excellent)
+=======
+# RapidRide-App
+Real-time ride hailing platform built using MERN + Redis + JWT
+>>>>>>> 9831d25c42ff45c4c0d9c41cbc7f6531fdf02066
