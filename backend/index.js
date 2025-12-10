@@ -31,15 +31,17 @@ const { register: metricsRegister, metricsMiddleware, socketConnectionsGauge } =
 const logger = require('./services/logger');
 
 const app = express();
+// Trust proxy for Railway/production deployment
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 3000;
 const MONGO = process.env.MONGO_URI || 'mongodb://localhost:27017/rapidride';
 
 // Enable CORS for deployed frontend and local network access
 app.use(cors({
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     // Allow localhost, 127.0.0.1, and local network IPs with HTTP or HTTPS
     const allowedOrigins = [
       /^https?:\/\/localhost:\d+$/,
@@ -49,11 +51,11 @@ app.use(cors({
       'https://rapidrideonline.web.app',
       'https://rapidrideonline.firebaseapp.com'
     ];
-    
-    const isAllowed = allowedOrigins.some(pattern => 
+
+    const isAllowed = allowedOrigins.some(pattern =>
       typeof pattern === 'string' ? pattern === origin : pattern.test(origin)
     );
-    
+
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -190,9 +192,9 @@ const useHTTPS = fs.existsSync(keyPath) && fs.existsSync(certPath);
 
 // CORS configuration for Socket.IO
 const socketCorsConfig = {
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    
+
     const allowedOrigins = [
       /^https?:\/\/localhost:\d+$/,
       /^https?:\/\/127\.0\.0\.1:\d+$/,
@@ -201,11 +203,11 @@ const socketCorsConfig = {
       'https://rapidrideonline.web.app',
       'https://rapidrideonline.firebaseapp.com'
     ];
-    
-    const isAllowed = allowedOrigins.some(pattern => 
+
+    const isAllowed = allowedOrigins.some(pattern =>
       typeof pattern === 'string' ? pattern === origin : pattern.test(origin)
     );
-    
+
     callback(null, isAllowed);
   },
   credentials: true
@@ -240,7 +242,7 @@ const socketAuthMiddleware = async (socket, next) => {
 
     // Use Firebase Admin SDK to verify token
     const { admin, firebaseInitialized } = require('./config/firebase');
-    
+
     if (!firebaseInitialized) {
       console.warn('Firebase not initialized, skipping WebSocket auth');
       socket.userId = 'dev-user';
@@ -252,18 +254,18 @@ const socketAuthMiddleware = async (socket, next) => {
       const decodedToken = await admin.auth().verifyIdToken(token);
       socket.userId = decodedToken.uid;
       socket.email = decodedToken.email;
-      
+
       console.log(`🔍 Socket token decoded - UID: ${decodedToken.uid}, Email: ${decodedToken.email}`);
-      
+
       // Get user role from database - use firebaseUid as primary lookup
       const User = require('./models/user');
       const user = await User.findOne({ firebaseUid: decodedToken.uid });
-      
+
       console.log(`👤 Found user in DB: ${user?.name}, Role: ${user?.role}, UID: ${user?.firebaseUid}`);
-      
+
       socket.role = user?.role || 'rider';
       socket.userName = user?.name || decodedToken.name || 'User';
-      
+
       console.log(`✅ Socket authenticated: ${socket.userName} (${socket.role})`);
       next();
     } catch (firebaseError) {
@@ -295,17 +297,17 @@ setInterval(() => {
   const now = Date.now();
   const ONE_HOUR = 60 * 60 * 1000;
   let removedCount = 0;
-  
+
   for (const [userId, driverData] of onlineDrivers.entries()) {
     const inactiveTime = now - driverData.lastActivity;
-    
+
     if (inactiveTime >= ONE_HOUR) {
       onlineDrivers.delete(userId);
       removedCount++;
       console.log(`⏰ Driver ${userId} removed due to 1 hour inactivity`);
     }
   }
-  
+
   if (removedCount > 0) {
     console.log(`🧹 Cleaned up ${removedCount} inactive driver(s)`);
     console.log(`📈 Active online drivers: ${onlineDrivers.size}`);
@@ -338,22 +340,22 @@ httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
   console.log(`${'═'.repeat(60)}`);
   console.log(`📍 HTTP  Local:    http://localhost:${HTTP_PORT}`);
   console.log(`📱 HTTP  Network:  http://${localIP}:${HTTP_PORT}`);
-  
+
   if (useHTTPS) {
     console.log(`🔒 HTTPS Local:    https://localhost:${HTTPS_PORT}`);
     console.log(`🔒 HTTPS Network:  https://${localIP}:${HTTPS_PORT}`);
   }
-  
+
   console.log(`${'═'.repeat(60)}`);
   console.log(`\n🚀 Multi-Device Access:`);
   console.log(`   Desktop (HTTP):  http://${localIP}:${HTTP_PORT}/rider/rider_home.html`);
-  
+
   if (useHTTPS) {
     console.log(`   Mobile (HTTPS):  https://${localIP}:${HTTPS_PORT}/rider/rider_home.html`);
     console.log(`\n⚠️  HTTPS with self-signed certificate:`);
     console.log(`   On mobile devices, click "Advanced" → "Proceed to site"`);
   }
-  
+
   console.log(`\n⚠️  Make sure devices are on the SAME WiFi network\n`);
 });
 
@@ -376,12 +378,12 @@ function handleSocketConnection(socket) {
     // Use authenticated userId from socket, not client data
     const userId = socket.userId;
     const { vehicleType, location } = data;
-    
+
     // Only drivers can go online
     if (socket.role !== 'driver') {
       return socket.emit('error', { message: 'Only drivers can go online' });
     }
-    
+
     onlineDrivers.set(userId, {
       socketId: socket.id,
       vehicleType: vehicleType || 'Sedan',
