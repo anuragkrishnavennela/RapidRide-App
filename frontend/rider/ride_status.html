@@ -1526,26 +1526,31 @@
 
       // Add driver marker if location available
       if (ride.driver && ride.driver.currentLocation) {
-        const vehicleEmoji = {
-          'Bike': '🏍️',
-          'Auto': '🛺',
-          'Car': '🚗',
-          'SUV': '🚙',
-          'Carpool': '🚕',
-          'Shuttle': '🚐'
-        }[ride.driver.vehicle?.type] || '🚗';
+        const lat = ride.driver.currentLocation.lat;
+        const lng = ride.driver.currentLocation.lng || ride.driver.currentLocation.lon;
 
-        const driverIcon = L.divIcon({
-          html: `<div style="font-size: 2rem;">${vehicleEmoji}</div>`,
-          className: 'custom-marker',
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
-        });
+        if (lat && lng) {
+          const vehicleEmoji = {
+            'Bike': '🏍️',
+            'Auto': '🛺',
+            'Car': '🚗',
+            'SUV': '🚙',
+            'Carpool': '🚕',
+            'Shuttle': '🚐'
+          }[ride.driver.vehicle?.type] || '🚗';
 
-        driverMarker = L.marker(
-          [ride.driver.currentLocation.lat, ride.driver.currentLocation.lng],
-          { icon: driverIcon }
-        ).addTo(map);
+          const driverIcon = L.divIcon({
+            html: `<div style="font-size: 2rem;">${vehicleEmoji}</div>`,
+            className: 'custom-marker',
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+          });
+
+          driverMarker = L.marker(
+            [lat, lng],
+            { icon: driverIcon }
+          ).addTo(map);
+        }
       }
 
       // Fit bounds to show all markers
@@ -1553,8 +1558,13 @@
         [ride.pickup.lat, ride.pickup.lng],
         [ride.dropoff?.lat || ride.destination?.lat, ride.dropoff?.lng || ride.destination?.lng]
       ]);
+
       if (ride.driver && ride.driver.currentLocation) {
-        bounds.extend([ride.driver.currentLocation.lat, ride.driver.currentLocation.lng]);
+        const dLat = ride.driver.currentLocation.lat;
+        const dLng = ride.driver.currentLocation.lng || ride.driver.currentLocation.lon;
+        if (dLat && dLng) {
+          bounds.extend([dLat, dLng]);
+        }
       }
       map.fitBounds(bounds, { padding: [50, 50] });
     }
