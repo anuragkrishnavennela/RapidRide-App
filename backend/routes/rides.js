@@ -318,7 +318,7 @@ router.get('/current', firebaseAuthMiddleware, async (req, res) => {
       console.log('👤 Rider Info - ID:', user._id, 'Name:', user.name);
 
       response.driver = {
-        name: ride.driverId.name,
+        name: ride.driverId.name || 'RapidRide Driver',
         phone: ride.driverId.phone,
         email: ride.driverId.email,
         vehicle: ride.driverId.vehicle,
@@ -437,7 +437,7 @@ router.get('/:rideId', firebaseAuthMiddleware, async (req, res) => {
     // Include driver info if assigned
     if (ride.driverId) {
       response.driver = {
-        name: ride.driverId.name,
+        name: ride.driverId.name || 'RapidRide Driver',
         phone: ride.driverId.phone,
         email: ride.driverId.email,
         vehicle: ride.driverId.vehicle,
@@ -667,7 +667,7 @@ router.post('/:rideId/accept', firebaseAuthMiddleware, async (req, res) => {
         rideId: ride._id,
         riderId: ride.riderId._id,
         driver: {
-          name: driver.name,
+          name: driver.name || 'RapidRide Driver',
           phone: driver.phone,
           vehicle: driver.vehicle,
           currentLocation: driver.currentLocation || null
