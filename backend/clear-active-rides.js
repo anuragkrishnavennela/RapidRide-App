@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
+require('dotenv').config();
+
 // MongoDB connection
-const MONGODB_URI = 'mongodb://localhost:27017/rapidride';
+const MONGODB_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/rapidride';
 
 async function clearActiveRides() {
     try {

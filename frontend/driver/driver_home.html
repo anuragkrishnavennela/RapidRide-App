@@ -558,6 +558,12 @@
             Go Offline
           </button>
         </div>
+        <div style="margin-top: 10px; width: 100%;">
+          <button class="btn" onclick="debugClearActiveRides()"
+            style="width: 100%; background: rgba(239, 68, 68, 0.1); border: 1px dashed #ef4444; color: #ef4444; padding: 0.4rem; font-size: 0.85rem; cursor: pointer;">
+            🧹 Debug: Clear Active Rides
+          </button>
+        </div>
       </div>
     </div>
 
@@ -1232,6 +1238,32 @@
           }
         }
       }
+      // Debug function attached to window
+      window.debugClearActiveRides = async function () {
+        if (!confirm('DEBUG: Are you sure you want to clear ALL active rides? This will cancel existing rides.')) return;
+
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = 'Clearing...';
+        btn.disabled = true;
+
+        try {
+          const res = await apiFetch('/rides/clear-active', { method: 'POST' });
+          // Note: apiFetch already returns parsed JSON in res.data for 200 OK
+
+          if (res.ok) {
+            alert(`Success! Cleared ${res.data.count} rides.`);
+            window.location.reload();
+          } else {
+            alert('Failed: ' + (res.data?.error || res.status));
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+        } finally {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }
+      };
     };
   </script>
   <script src="../common/js/confirm-logout.js"></script>

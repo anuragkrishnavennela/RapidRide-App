@@ -14,6 +14,22 @@ if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
   throw new Error('JWT_SECRET must be set in production');
 }
 
+// DEBUG: Clear all active rides (Temporary)
+router.post('/clear-active', firebaseAuthMiddleware, async (req, res) => {
+  try {
+    const Ride = require('../models/ride');
+    const result = await Ride.updateMany(
+      { status: { $in: ['requested', 'accepted', 'arrived', 'started'] } },
+      { $set: { status: 'cancelled' } }
+    );
+    console.log(`🧹 Debug: Cleared ${result.modifiedCount} active rides by ${req.user.email}`);
+    res.json({ success: true, count: result.modifiedCount });
+  } catch (error) {
+    console.error('Failed to clear rides:', error);
+    res.status(500).json({ error: 'Failed to clear rides' });
+  }
+});
+
 // POST /api/rides/estimate - Get fare estimate before booking
 router.post('/estimate', [
   firebaseAuthMiddleware,
