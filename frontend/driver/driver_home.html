@@ -718,6 +718,11 @@
           if (authUser) {
             console.log('Updating stats for authenticated user');
 
+            // Auto-Fix DB Corruption (Crucial for 500 errors)
+            apiFetch('/auth/fix-db-date', { method: 'POST' })
+              .then(() => console.log('✅ DB Integrity Verified'))
+              .catch(e => console.warn('DB Check Error (non-fatal):', e));
+
             // Initialize Socket.IO now that Firebase auth is ready
             if (typeof DriverSocket !== 'undefined') {
               console.log('🔌 Initializing DriverSocket with Firebase auth...');
