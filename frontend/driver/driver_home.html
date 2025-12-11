@@ -923,7 +923,8 @@
                           <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Get help and
                             support</div>
                         </div>
-                      </button></div>
+                      </button>
+                    </div>
                   </div>
       </div>
     </main>
@@ -1002,11 +1003,7 @@
 
         if (profileBtn && u) {
           if (u.avatar) {
-            const avatarSrc = u.avatar.includes('/') ? u.avatar : `../assets/$ {
-            u.avatar
-          }
-
-          .png`;
+            const avatarSrc = u.avatar.includes('/') ? u.avatar : `../assets/${u.avatar}.png`;
             profileBtn.innerHTML = `<img src="${avatarSrc}" alt="Avatar" >`;
           }
 
@@ -1026,19 +1023,11 @@
               // Update total stats UI
               document.getElementById('totalRidesCount').textContent = stats.completedRides || 0;
 
-              document.getElementById('totalEarnings').textContent = `₹$ {
-              stats.totalEarnings || 0
-            }
-
-            `;
+              document.getElementById('totalEarnings').textContent = `₹${stats.totalEarnings || 0}`;
 
               // Display rating
               if (stats.totalRatings > 0 && stats.rating > 0) {
-                document.getElementById('totalRating').textContent = `★ $ {
-                stats.rating.toFixed(1)
-              }
-
-              `;
+                document.getElementById('totalRating').textContent = `★ ${stats.rating.toFixed(1)}`;
               }
 
               else {
@@ -1064,11 +1053,7 @@
               document.getElementById('todayRidesCount').textContent = stats.completedRides || 0;
 
               // Distance is already in km from backend, no need to divide
-              document.getElementById('todayDistance').textContent = `$ {
-              (stats.distance || 0).toFixed(1)
-            }
-
-            km`;
+              document.getElementById('todayDistance').textContent = `${(stats.distance || 0).toFixed(1)} km`;
             }
           }
 
@@ -1145,11 +1130,7 @@
           if (u && u.id) {
             const vehicleType = u.vehicle?.type || 'Sedan';
 
-            console.log(`🟢 Going ONLINE - Vehicle Type: $ {
-            vehicleType
-          }
-
-          `);
+            console.log(`🟢 Going ONLINE - Vehicle Type: ${vehicleType}`);
 
             try {
               DriverSocket.goOnline(u.id, vehicleType);
@@ -1267,11 +1248,7 @@
               if (timeSinceActivity < ONE_HOUR && u && u.id === state.userId) {
                 console.log('🔄 Restoring online state from previous session...');
 
-                console.log(`⏰ $ {
-                Math.round(timeSinceActivity / 60000)
-              }
-
-              minutes since last activity`);
+                console.log(`⏰ ${Math.round(timeSinceActivity / 60000)} minutes since last activity`);
 
                 // Automatically go online
                 setTimeout(() => {
@@ -1332,23 +1309,7 @@
         }
 
         else {
-          container.innerHTML = mockNotifications.map(notif => ` <div class="notification-item ${notif.read ? '' : 'unread'}" onclick="markAsRead(${notif.id})" > <div class="notification-title" > $ {
-            notif.title
-          }
-
-          $ {
-            !notif.read ? '<span style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%;"></span>' : ''
-          }
-
-          </div> <div class="notification-message" >$ {
-            notif.message
-          }
-
-          </div> <div class="notification-time" >$ {
-            notif.time
-          }
-
-          </div> </div> `).join('');
+          container.innerHTML = mockNotifications.map(notif => ` <div class="notification-item ${notif.read ? '' : 'unread'}" onclick="markAsRead(${notif.id})" > <div class="notification-title" > ${notif.title} ${!notif.read ? '<span style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%;"></span>' : ''} </div> <div class="notification-message" >${notif.message}</div> <div class="notification-time" >${notif.time}</div> </div> `).join('');
 
           const unreadCount = mockNotifications.filter(n => !n.read).length;
           updateNotificationBadge(unreadCount);
@@ -1402,27 +1363,7 @@
           return;
         }
 
-        listContainer.innerHTML = requests.map(request => ` <div class="ride-request-item" style="cursor: default;" > <div class="request-header" > <span style="font-weight: 600; color: #fff;" >🚗 $ {
-          request.vehicleType || 'Ride'
-        }
-
-        Request</span> <span class="request-distance" >$ {
-          request.distance ? request.distance.toFixed(1) : '0'
-        }
-
-        km</span> </div> <div class="request-location" > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" > <circle cx="12" cy="10" r="3" ></circle> <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" ></path> </svg> <div style="flex: 1;" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Pickup</div> <div style="font-size: 0.95rem;" >$ {
-          request.pickup?.address || 'N/A'
-        }
-
-        </div> </div> </div> <div class="request-location" > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" > <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" ></path> <circle cx="12" cy="10" r="3" ></circle> </svg> <div style="flex: 1;" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Dropoff</div> <div style="font-size: 0.95rem;" >$ {
-          request.destination?.address || 'N/A'
-        }
-
-        </div> </div> </div> <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Estimated Fare</div> <div class="request-fare" >₹$ {
-          request.fare || 0
-        }
-
-        </div> </div> <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem;" > <button onclick="viewRequestDetails('${request.rideId}')" style="padding: 0.6rem 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid var(--primary); border-radius: 8px; color: var(--primary); font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;" onmouseover="this.style.background='rgba(139, 92, 246, 0.2)'" onmouseout="this.style.background='rgba(139, 92, 246, 0.1)'" > 📋 View Details </button> <button onclick="acceptRideDirectly('${request.rideId}')" style="padding: 0.6rem 1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" > ✅ Accept Ride </button> </div> </div> `).join('');
+        listContainer.innerHTML = requests.map(request => ` <div class="ride-request-item" style="cursor: default;" > <div class="request-header" > <span style="font-weight: 600; color: #fff;" >🚗 ${request.vehicleType || 'Ride'} Request</span> <span class="request-distance" >${request.distance ? request.distance.toFixed(1) : '0'} km</span> </div> <div class="request-location" > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" > <circle cx="12" cy="10" r="3" ></circle> <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" ></path> </svg> <div style="flex: 1;" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Pickup</div> <div style="font-size: 0.95rem;" >${request.pickup?.address || 'N/A'}</div> </div> </div> <div class="request-location" > <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" > <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" ></path> <circle cx="12" cy="10" r="3" ></circle> </svg> <div style="flex: 1;" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Dropoff</div> <div style="font-size: 0.95rem;" >${request.destination?.address || 'N/A'}</div> </div> </div> <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1);" > <div style="font-size: 0.85rem; color: var(--text-muted);" >Estimated Fare</div> <div class="request-fare" >₹${request.fare || 0}</div> </div> <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.75rem;" > <button onclick="viewRequestDetails('${request.rideId}')" style="padding: 0.6rem 1rem; background: rgba(139, 92, 246, 0.1); border: 1px solid var(--primary); border-radius: 8px; color: var(--primary); font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;" onmouseover="this.style.background='rgba(139, 92, 246, 0.2)'" onmouseout="this.style.background='rgba(139, 92, 246, 0.1)'" > 📋 View Details </button> <button onclick="acceptRideDirectly('${request.rideId}')" style="padding: 0.6rem 1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" > ✅ Accept Ride </button> </div> </div> `).join('');
       }
 
       // Store current ride requests globally
@@ -1437,11 +1378,7 @@
           // Store requests in sessionStorage for the request page
           sessionStorage.setItem('rideRequests', JSON.stringify(currentRideRequests));
 
-          window.location.href = `request.html?id=$ {
-          requestId
-        }
-
-        `;
+          window.location.href = `request.html?id=${requestId}`;
         }
 
         else {
