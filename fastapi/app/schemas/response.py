@@ -57,6 +57,7 @@ class ReverseGeoResponse(BaseModel):
 class HealthResponse(BaseModel):
     """Response schema for health check"""
     status: str
+    model_config = {"protected_namespaces": ()}
     model_loaded: bool = False
     queue_connected: bool = False
     redis_connected: bool = False
