@@ -775,11 +775,155 @@ router.post('/link-phone', authenticateToken, async (req, res) => {
 });
 
 // ============================================================
+// BACKEND EMAIL/PASSWORD AUTH (Bypass Firebase Client SDK)
+// ============================================================
+
+const bcrypt = require('bcryptjs');
+
+// Backend Sign Up (creates user in MongoDB)
+router.post('/signup', async (req, res) => {
+  try {
+    const { email, password, name, phone, role } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password required' });
+    }
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    user = new User({
+      email,
+      password: hashedPassword,
+      name: name || null,
+      phone: phone || null,
+      role: role || null,
+      emailVerified: true, // Auto-verify for backend auth
+      phoneVerified: false
+    });
+
+    await user.save();
+    console.log('✅ User created via backend auth:', email);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified
+      }
+    });
+  } catch (error) {
+    console.error('Backend signup error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
+// Backend Sign In (email/password)
+router.post('/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password required' });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Check if user has password (might be Firebase-only user)
+    if (!user.password) {
+      return res.status(401).json({ message: 'This account uses Firebase authentication. Please wait for Firebase to be reinstated.' });
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    console.log('✅ User signed in via backend auth:', email);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        avatar: user.avatar,
+        emailVerified: user.emailVerified,
+        phoneVerified: user.phoneVerified
+      }
+    });
+  } catch (error) {
+    console.error('Backend signin error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
+// ============================================================
 // LOGOUT
 // ============================================================
 
 router.post('/logout', (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
+});
+
+// FIX DB DATES - Temporary endpoint
+router.post('/fix-db-date', firebaseAuthMiddleware, async (req, res) => {
+  try {
+    const User = require('../models/user');
+    // Find user by Firebase UID or Email
+    const query = req.user.uid ? { firebaseUid: req.user.uid } : { email: req.user.email };
+
+    console.log('🔧 Fixing date for:', query);
+
+    // Use native collection update to bypass Mongoose validation
+    const result = await User.collection.updateOne(
+      query,
+      {
+        $set: { createdAt: new Date() }
+        // We can also fix other fields if needed
+      }
+    );
+
+    res.json({ success: true, message: 'Date fixed', result });
+  } catch (error) {
+    console.error('Fix date error:', error);
+    res.status(500).json({ message: 'Failed to fix date', error: error.message });
+  }
 });
 
 module.exports = router;
