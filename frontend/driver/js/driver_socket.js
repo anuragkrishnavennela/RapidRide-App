@@ -194,7 +194,7 @@
       const user = firebase.auth().currentUser;
       if (!user) throw new Error('Not authenticated');
 
-      const response = await apiFetch('/api/rides/accept', {
+      const response = await apiFetch('/rides/accept', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -202,7 +202,7 @@
         body: JSON.stringify({ rideId })
       });
 
-      const data = await response.json();
+      const data = response.data;
 
       if (response.ok) {
         // Remove from pending requests
