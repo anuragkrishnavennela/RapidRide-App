@@ -410,11 +410,15 @@ router.get('/:rideId', firebaseAuthMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find ride by ID and ensure it belongs to the user
+    // Find ride by ID and ensure it belongs to the user (Rider OR Driver)
     const ride = await Ride.findOne({
       _id: rideId,
-      riderId: user._id
-    }).populate('driverId', 'name email phone vehicle license currentLocation');
+      $or: [
+        { riderId: user._id },
+        { driverId: user._id }
+      ]
+    }).populate('driverId', 'name email phone vehicle license currentLocation')
+      .populate('riderId', 'name phone email');
 
     if (!ride) {
       return res.status(404).json({ message: 'Ride not found' });
@@ -431,7 +435,9 @@ router.get('/:rideId', firebaseAuthMiddleware, async (req, res) => {
       distance: ride.distance,
       estimatedTime: ride.duration ? ride.duration * 60 : null,
       otp: ride.otp || null,
-      driver: null
+      driver: null,
+      riderName: ride.riderId ? (ride.riderId.name || 'Rider') : 'Rider',
+      riderPhone: ride.riderId ? ride.riderId.phone : null
     };
 
     // Include driver info if assigned
