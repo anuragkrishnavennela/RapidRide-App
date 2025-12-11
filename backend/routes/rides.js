@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
+const { findUserByFirebaseAuth } = require('../helpers/user');
 const store = require('../data/store');
 const fastapi = require('../services/fastapi');
 const redis = require('../services/redis');
@@ -115,12 +116,7 @@ router.post('/location', firebaseAuthMiddleware, async (req, res) => {
     }
 
     // Find driver - USE FIREBASE UID
-    const driver = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const driver = await findUserByFirebaseAuth(req.user);
 
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
@@ -171,12 +167,7 @@ router.post('/request', firebaseAuthMiddleware, async (req, res) => {
     }
 
     // Get user from database - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -298,12 +289,7 @@ router.get('/current', firebaseAuthMiddleware, async (req, res) => {
     const User = require('../models/user');
 
     // Find user by Firebase UID (primary) or email (fallback) - THIS FIXES THE BUG
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -364,12 +350,7 @@ router.get('/history', firebaseAuthMiddleware, async (req, res) => {
     const skip = parseInt(req.query.skip) || 0;
 
     // Get user from database - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.json({ rides: [], total: 0 });
@@ -420,12 +401,7 @@ router.get('/:rideId', firebaseAuthMiddleware, async (req, res) => {
     const { rideId } = req.params;
 
     // Find user - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -510,12 +486,7 @@ router.get('/stats', firebaseAuthMiddleware, async (req, res) => {
     const User = require('../models/user');
 
     // Get user from database - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.json({ totalRides: 0, totalSpent: 0, rating: null });
@@ -562,12 +533,7 @@ router.post('/:rideId/cancel', firebaseAuthMiddleware, async (req, res) => {
     const { rideId } = req.params;
 
     // Find user - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -632,12 +598,7 @@ router.post('/:rideId/accept', firebaseAuthMiddleware, async (req, res) => {
     const { rideId } = req.params;
 
     // Find driver - USE FIREBASE UID
-    const driver = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const driver = await findUserByFirebaseAuth(req.user);
 
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
@@ -733,12 +694,7 @@ router.post('/:rideId/start', firebaseAuthMiddleware, async (req, res) => {
     const { otp } = req.body;
 
     // Find driver - USE FIREBASE UID
-    const driver = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const driver = await findUserByFirebaseAuth(req.user);
 
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
@@ -795,12 +751,7 @@ router.post('/:rideId/arrived', firebaseAuthMiddleware, async (req, res) => {
     const { rideId } = req.params;
 
     // Find driver - USE FIREBASE UID
-    const driver = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const driver = await findUserByFirebaseAuth(req.user);
 
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
@@ -851,12 +802,7 @@ router.post('/:rideId/complete', firebaseAuthMiddleware, async (req, res) => {
     const { rideId } = req.params;
 
     // Find driver - USE FIREBASE UID
-    const driver = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const driver = await findUserByFirebaseAuth(req.user);
 
     if (!driver) {
       return res.status(404).json({ message: 'Driver not found' });
@@ -965,12 +911,7 @@ router.post('/:rideId/rate', firebaseAuthMiddleware, async (req, res) => {
     }
 
     // Find user - USE FIREBASE UID
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });

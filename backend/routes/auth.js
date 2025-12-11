@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { admin, firebaseInitialized } = require('../config/firebase');
 const { firebaseAuthMiddleware } = require('../middleware/auth');
+const { findUserByFirebaseAuth } = require('../helpers/user');
 const fetch = require('node-fetch');
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -611,12 +612,7 @@ router.put('/profile', firebaseAuthMiddleware, async (req, res) => {
     const { name, gender, avatar, vehicle, license } = req.body;
 
     // Find user by Firebase UID or Email
-    const user = await User.findOne({
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    });
+    const user = await findUserByFirebaseAuth(req.user);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -913,12 +909,15 @@ router.post('/fix-db-date', firebaseAuthMiddleware, async (req, res) => {
     const User = require('../models/user');
     // Find user by Firebase UID OR Email (to be sure we catch them)
     // Note: req.user from firebase middleware only has uid/email from token
-    const query = {
-      $or: [
-        { firebaseUid: req.user.uid },
-        { email: req.user.email }
-      ]
-    };
+    let query = { firebaseUid: req.user.uid };
+    if (req.user.email) {
+      query = {
+        $or: [
+          { firebaseUid: req.user.uid },
+          { email: req.user.email }
+        ]
+      };
+    }
 
     console.log('🔧 Fixing date for query:', JSON.stringify(query));
 

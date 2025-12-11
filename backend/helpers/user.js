@@ -11,12 +11,16 @@ async function findUserByFirebaseAuth(firebaseUser) {
         return null;
     }
 
-    return await User.findOne({
-        $or: [
-            { firebaseUid: firebaseUser.uid },
-            { email: firebaseUser.email }
-        ]
-    });
+    let query = { firebaseUid: firebaseUser.uid };
+    if (firebaseUser.email) {
+        query = {
+            $or: [
+                { firebaseUid: firebaseUser.uid },
+                { email: firebaseUser.email }
+            ]
+        };
+    }
+    return await User.findOne(query);
 }
 
 module.exports = {
