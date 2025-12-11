@@ -132,6 +132,11 @@ router.post('/location', firebaseAuthMiddleware, async (req, res) => {
       lng: location.lng,
       lastUpdated: new Date()
     };
+    // Sanitize createdAt to fix "Cast to date failed"
+    if (driver.createdAt && typeof driver.createdAt === 'object' && driver.createdAt.$date) {
+      console.log('Fixing corrupted createdAt for driver:', driver._id);
+      driver.createdAt = new Date(driver.createdAt.$date);
+    }
     await driver.save();
 
     // Broadcast location update via Socket.IO if needed
