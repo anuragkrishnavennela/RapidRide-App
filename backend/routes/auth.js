@@ -905,21 +905,28 @@ router.post('/logout', (req, res) => {
 router.post('/fix-db-date', firebaseAuthMiddleware, async (req, res) => {
   try {
     const User = require('../models/user');
-    // Find user by Firebase UID or Email
-    const query = req.user.uid ? { firebaseUid: req.user.uid } : { email: req.user.email };
+    // Find user by Firebase UID OR Email (to be sure we catch them)
+    // Note: req.user from firebase middleware only has uid/email from token
+    const query = {
+      $or: [
+        { firebaseUid: req.user.uid },
+        { email: req.user.email }
+      ]
+    };
 
-    console.log('🔧 Fixing date for:', query);
+    console.log('🔧 Fixing date for query:', JSON.stringify(query));
 
     // Use native collection update to bypass Mongoose validation
     const result = await User.collection.updateOne(
       query,
       {
         $set: { createdAt: new Date() }
-        // We can also fix other fields if needed
       }
     );
 
-    res.json({ success: true, message: 'Date fixed', result });
+    console.log('🔧 Fix result:', result);
+
+    res.json({ success: true, message: 'Date fixed', result: { matched: result.matchedCount, modified: result.modifiedCount } });
   } catch (error) {
     console.error('Fix date error:', error);
     res.status(500).json({ message: 'Failed to fix date', error: error.message });
