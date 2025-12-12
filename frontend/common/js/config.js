@@ -15,15 +15,20 @@ if (!window.API_CONFIG) {
         async init() {
             if (!this.isLocal && !this.backendIP) {
                 try {
-                    // Fetch backend IP from a config endpoint
-                    const response = await fetch('https://rapidrideonline.web.app/backend-config.json');
-                    const config = await response.json();
-                    this.backendIP = config.ip;
-                    console.log('✅ Backend IP loaded:', this.backendIP);
+                    // Try fetching from root (relative path)
+                    // This works if backend-config.json is deployed with the frontend
+                    const response = await fetch('/backend-config.json');
+                    if (response.ok) {
+                        const config = await response.json();
+                        this.backendIP = config.ip;
+                        console.log('✅ Backend IP loaded from config:', this.backendIP);
+                    } else {
+                        throw new Error('Config file not found');
+                    }
                 } catch (error) {
                     // Fallback to Railway URL
                     this.backendIP = 'rapidride-app-production.up.railway.app';
-                    console.warn('⚠️ Using fallback URL:', this.backendIP);
+                    console.warn('⚠️ Using fallback Railway URL:', this.backendIP);
                 }
             }
         },
