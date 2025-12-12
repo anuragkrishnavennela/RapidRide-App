@@ -27,7 +27,7 @@ if (!window.API_CONFIG) {
                     }
                 } catch (error) {
                     // Fallback to Railway URL
-                    this.backendIP = 'rapidride-app-production.up.railway.app';
+                    this.backendIP = 'rapidride-app-production-82e4.up.railway.app';
                     console.warn('⚠️ Using fallback Railway URL:', this.backendIP);
                 }
             }

@@ -57,6 +57,16 @@ async function createAdmin() {
       process.exit(1);
     }
 
+    // Get password
+    const password = await question('Enter admin password: ');
+    if (!password || password.length < 6) {
+      console.error('❌ Password must be at least 6 characters');
+      rl.close();
+      process.exit(1);
+    }
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     console.log('\n' + '═'.repeat(50));
     console.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(MONGODB_URI);
@@ -100,8 +110,9 @@ async function createAdmin() {
         email,
         name,
         phone,
+        password: hashedPassword,
         role: 'admin',
-        emailVerified: false,
+        emailVerified: true, // Auto-verify admin
         phoneVerified: false
       });
 
@@ -112,7 +123,7 @@ async function createAdmin() {
       console.log(`   Phone: ${adminUser.phone}`);
       console.log(`   Role: ${adminUser.role}`);
       console.log(`   ID: ${adminUser._id}`);
-      console.log('\n📧 Admin can now sign in using email link or phone OTP authentication');
+      console.log('\n🔐 Admin can now sign in using EMAIL and PASSWORD');
     }
 
     await mongoose.connection.close();

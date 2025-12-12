@@ -91,9 +91,16 @@
             style="background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white;">
         </div>
 
+        <div class="input-group" style="margin-top: 1rem;">
+          <label style="color: var(--text-muted);">Password</label>
+          <input type="password" id="password" class="input-field" placeholder="••••••••" required
+            style="background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white;">
+        </div>
+
+
         <button type="submit" class="btn w-full mt-4"
           style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: none; font-weight: 600; padding: 0.85rem;">
-          Send Login Link
+          Login to Dashboard
         </button>
       </form>
 
@@ -215,41 +222,53 @@
       }
     }
 
-    // Send sign-in link
+    // Login Handler
     document.getElementById('emailForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const btn = e.target.querySelector('button[type="submit"]');
       const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-      if (!window.firebaseConfigured) {
-        showError('System configuration error (Firebase). Contact support.');
-        return;
-      }
-
-      btn.textContent = 'Sending Secure Link...';
+      btn.textContent = 'Authenticating...';
       btn.disabled = true;
       errorMsg.style.display = 'none';
       successMsg.style.display = 'none';
 
       try {
-        const actionCodeSettings = {
-          // Use current URL to return to this same page
-          url: window.location.href,
-          handleCodeInApp: true
-        };
+        const response = await fetch(`${API_CONFIG.BASE_URL}/auth/signin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
 
-        await window.firebaseAuth.sendSignInLinkToEmail(email, actionCodeSettings);
-        window.localStorage.setItem('emailForSignIn', email);
+        const data = await response.json();
 
-        showSuccess(`✅ Login link sent to ${email}. Check your inbox.`);
-        document.getElementById('email').value = '';
+        if (response.ok && data.success) {
+          if (data.user.role !== 'admin') {
+            throw new Error('Access Denied: You do not have administrator privileges.');
+          }
+
+          showSuccess('✅ Authenticated! Redirecting...');
+
+          // Store token and user data
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          setTimeout(() => {
+            window.location.href = 'admin_dashboard.html';
+          }, 1000);
+        } else {
+          throw new Error(data.message || 'Authentication failed');
+        }
 
       } catch (error) {
-        console.error('Error sending link:', error);
-        showError(error.message || 'Failed to send login link.');
+        console.error('Login error:', error);
+        showError(error.message || 'Login failed. Please check your credentials.');
       } finally {
-        btn.textContent = 'Send Login Link';
+        btn.textContent = 'Login to Dashboard';
         btn.disabled = false;
       }
     });
