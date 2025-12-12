@@ -13,7 +13,6 @@
       justify-content: center;
       min-height: 100vh;
       background: #0f172a;
-      /* Dark background for admin feel */
     }
 
     .auth-container {
@@ -31,8 +30,7 @@
     }
 
     .error-msg,
-    .success-msg,
-    .info-msg {
+    .success-msg {
       padding: 0.75rem;
       border-radius: 8px;
       margin-bottom: 1rem;
@@ -52,12 +50,6 @@
       color: #6ee7b7;
     }
 
-    .info-msg {
-      background: rgba(59, 130, 246, 0.15);
-      border: 1px solid #3b82f6;
-      color: #93c5fd;
-    }
-
     .admin-badge-icon {
       font-size: 3rem;
       margin-bottom: 1rem;
@@ -65,6 +57,31 @@
       background: linear-gradient(135deg, #ef4444, #dc2626);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    .otp-inputs {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+
+    .otp-input {
+      width: 45px;
+      height: 55px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .otp-input:focus {
+      border-color: #ef4444;
+      outline: none;
+      background: rgba(239, 68, 68, 0.1);
     }
   </style>
   <script src="../common/js/config.js"></script>
@@ -77,32 +94,61 @@
       <div class="text-center mb-4">
         <div class="admin-badge-icon">🔐</div>
         <h2 style="margin-bottom: 0.5rem; color: white;">Admin Portal</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Restricted Access - Authorized Personnel Only</p>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Restricted Access: Authorized Number Only</p>
       </div>
 
       <div id="errorMsg" class="error-msg"></div>
       <div id="successMsg" class="success-msg"></div>
-      <div id="infoMsg" class="info-msg"></div>
 
-      <form id="emailForm">
-        <div class="input-group">
-          <label style="color: var(--text-muted);">Admin Email</label>
-          <input type="email" id="email" class="input-field" placeholder="admin@rapidride.com" required autofocus
-            style="background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white;">
+      <!-- Step 1: Phone Number -->
+      <div id="phoneStep">
+        <form id="phoneForm">
+          <div class="input-group">
+            <label style="color: var(--text-muted);">Admin Phone Number</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" value="+91" disabled
+                style="width: 60px; background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); color: #888; text-align: center;"
+                class="input-field">
+              <input type="tel" id="phoneNumber" class="input-field" placeholder="9705637783" required autofocus
+                style="background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white; letter-spacing: 1px;">
+            </div>
+          </div>
+
+          <div id="recaptcha-container" style="margin-top: 1rem; display: flex; justify-content: center;"></div>
+
+          <button type="submit" id="sendOtpBtn" class="btn w-full mt-4"
+            style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: none; font-weight: 600; padding: 0.85rem;">
+            Send OTP
+          </button>
+        </form>
+      </div>
+
+      <!-- Step 2: OTP Verification -->
+      <div id="otpStep" style="display: none;">
+        <div class="text-center mb-4">
+          <p style="color: #ccc;">Enter the 6-digit code sent to your number</p>
         </div>
+        <form id="otpForm">
+          <div class="otp-inputs">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+            <input type="text" class="otp-input" maxlength="1" pattern="\d*">
+          </div>
 
-        <div class="input-group" style="margin-top: 1rem;">
-          <label style="color: var(--text-muted);">Password</label>
-          <input type="password" id="password" class="input-field" placeholder="••••••••" required
-            style="background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white;">
-        </div>
+          <button type="submit" id="verifyOtpBtn" class="btn w-full mt-2"
+            style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; border: none; font-weight: 600; padding: 0.85rem;">
+            Verify & Login
+          </button>
 
-
-        <button type="submit" class="btn w-full mt-4"
-          style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: none; font-weight: 600; padding: 0.85rem;">
-          Login to Dashboard
-        </button>
-      </form>
+          <button type="button" onclick="location.reload()" class="btn w-full mt-3"
+            style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 0.5rem;">
+            Go Back
+          </button>
+        </form>
+      </div>
 
       <div class="text-center mt-4">
         <p class="text-xs" style="color: var(--text-muted); opacity: 0.7;">
@@ -115,161 +161,152 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-
-  <!-- Firebase Config -->
   <script src="../common/js/firebase-config.js"></script>
 
   <script>
+    const ALLOWED_ADMIN_PHONE = '9705637783'; // Hardcoded restriction
+
+    const phoneStep = document.getElementById('phoneStep');
+    const otpStep = document.getElementById('otpStep');
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
-    const infoMsg = document.getElementById('infoMsg');
 
-    function showError(message) {
-      errorMsg.textContent = message;
+    let confirmationResult = null;
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
       errorMsg.style.display = 'block';
       successMsg.style.display = 'none';
-      infoMsg.style.display = 'none';
+      setTimeout(() => errorMsg.style.display = 'none', 5000);
     }
 
-    function showSuccess(message) {
-      successMsg.textContent = message;
+    function showSuccess(msg) {
+      successMsg.textContent = msg;
       successMsg.style.display = 'block';
       errorMsg.style.display = 'none';
-      infoMsg.style.display = 'none';
     }
 
-    function showInfo(message) {
-      infoMsg.textContent = message;
-      infoMsg.style.display = 'block';
-      errorMsg.style.display = 'none';
-      successMsg.style.display = 'none';
-    }
+    // Initialize Recaptcha
+    window.onload = function () {
+      // Clear any existing session
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
 
-    // Check if this is a sign-in link
-    window.addEventListener('load', () => {
-      // Check for token first - if valid, go to dashboard
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Simple check, real validation happens on dashboard
-        window.location.href = 'admin_dashboard.html';
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'normal',
+        'callback': (response) => {
+          // reCAPTCHA solved
+        }
+      });
+      window.recaptchaVerifier.render();
+    };
+
+    // Handle Phone Submission
+    document.getElementById('phoneForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phoneInput = document.getElementById('phoneNumber').value.trim();
+      const btn = document.getElementById('sendOtpBtn');
+
+      // 1. Strict Access Control Check
+      if (phoneInput !== ALLOWED_ADMIN_PHONE) {
+        showError('🚫 ACCESS DENIED: This number is not authorized for Admin access.');
         return;
       }
 
-      if (window.firebaseAuth && window.firebaseAuth.isSignInWithEmailLink(window.location.href)) {
-        completeSignIn();
+      const fullPhoneNumber = '+91' + phoneInput;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        confirmationResult = await window.firebaseAuth.signInWithPhoneNumber(fullPhoneNumber, window.recaptchaVerifier);
+        showSuccess(`OTP sent to ${fullPhoneNumber}`);
+        phoneStep.style.display = 'none';
+        otpStep.style.display = 'block';
+        document.querySelector('.otp-input').focus();
+      } catch (error) {
+        console.error(error);
+        showError(error.message || 'Failed to send OTP. Try again.');
+        window.recaptchaVerifier.reset();
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Send OTP';
       }
     });
 
-    // Complete sign-in when user clicks the link
-    async function completeSignIn() {
-      showInfo('Verifying credentials...');
+    // Handle OTP Input Auto-focus
+    const inputs = document.querySelectorAll('.otp-input');
+    inputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          inputs[index - 1].focus();
+        }
+      });
+    });
 
-      // Get email from URL parameter (if passed back) or prompt/localStorage
-      let email = window.localStorage.getItem('emailForSignIn');
+    // Handle verification
+    document.getElementById('otpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('verifyOtpBtn');
 
-      if (!email) {
-        email = window.prompt('Please confirm your admin email for security:');
-      }
+      let otpCode = '';
+      inputs.forEach(input => otpCode += input.value);
 
-      if (!email) {
-        showError('Email is required to verify identity');
+      if (otpCode.length !== 6) {
+        showError('Please enter the full 6-digit code');
         return;
       }
 
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
       try {
-        const result = await window.firebaseAuth.signInWithEmailLink(email, window.location.href);
-        window.localStorage.removeItem('emailForSignIn'); // Clean up
+        const result = await confirmationResult.confirm(otpCode);
+        const user = result.user;
+        const idToken = await user.getIdToken();
 
-        // Get ID token
-        const idToken = await result.user.getIdToken();
+        showSuccess('OTP Verified! Checking Admin Permissions...');
 
-        showSuccess('Authenticated! Redirecting to secure dashboard...');
-
-        // Send to backend to get standard JWT and role check
-        const response = await fetch(`${API_CONFIG.BASE_URL}/auth/firebase-email`, {
+        // 2. Server-side Role Check
+        const response = await fetch(`${API_CONFIG.BASE_URL}/auth/firebase-phone`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: result.user.email,
-            idToken: idToken
+            phoneNumber: user.phoneNumber,
+            uid: user.uid,
+            firebaseUid: user.uid
           })
         });
 
         const data = await response.json();
 
-        if (data.success) {
-          if (data.user.role !== 'admin') {
-            showError('Access Denied: You do not have administrator privileges.');
-            await window.firebaseAuth.signOut();
-            return;
-          }
-
-          localStorage.setItem('token', data.token);
+        if (data.success && data.user.role === 'admin') {
+          showSuccess('✅ Welcome, Admin! Redirecting...');
+          localStorage.setItem('token', idToken); // Use Firebase ID token as session token
           localStorage.setItem('user', JSON.stringify(data.user));
 
-          setTimeout(() => {
-            window.location.href = 'admin_dashboard.html';
-          }, 1000);
+          setTimeout(() => window.location.href = 'admin_dashboard.html', 1500);
         } else {
-          showError(data.message || 'Authentication failed');
+          throw new Error('Access Denied: Your account does not have Admin privileges.');
         }
 
       } catch (error) {
-        console.error('Sign-in error:', error);
-        showError(error.message || 'Verification failed. Link may have expired.');
-      }
-    }
+        console.error(error);
+        showError(error.message || 'Verification Failed');
 
-    // Login Handler
-    document.getElementById('emailForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const btn = e.target.querySelector('button[type="submit"]');
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      btn.textContent = 'Authenticating...';
-      btn.disabled = true;
-      errorMsg.style.display = 'none';
-      successMsg.style.display = 'none';
-
-      try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/auth/signin`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password })
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          if (data.user.role !== 'admin') {
-            throw new Error('Access Denied: You do not have administrator privileges.');
-          }
-
-          showSuccess('✅ Authenticated! Redirecting...');
-
-          // Store token and user data
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-
-          setTimeout(() => {
-            window.location.href = 'admin_dashboard.html';
-          }, 1000);
-        } else {
-          throw new Error(data.message || 'Authentication failed');
+        if (error.message.includes('Access Denied')) {
+          // Logout immediately if not admin
+          await window.firebaseAuth.signOut();
+          setTimeout(() => location.reload(), 2000);
         }
-
-      } catch (error) {
-        console.error('Login error:', error);
-        showError(error.message || 'Login failed. Please check your credentials.');
       } finally {
-        btn.textContent = 'Login to Dashboard';
         btn.disabled = false;
+        btn.textContent = 'Verify & Login';
       }
     });
   </script>
