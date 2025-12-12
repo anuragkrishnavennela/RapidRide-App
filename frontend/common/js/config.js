@@ -27,7 +27,7 @@ if (!window.API_CONFIG) {
                     }
                 } catch (error) {
                     // Fallback to Railway URL
-                    this.backendIP = 'rapidride-app-production-82e4.up.railway.app';
+                    this.backendIP = 'rapidride-app-production.up.railway.app';
                     console.warn('⚠️ Using fallback Railway URL:', this.backendIP);
                 }
             }
@@ -48,7 +48,7 @@ if (!window.API_CONFIG) {
                 return 'http://localhost:3000/api';
             } else {
                 // Production - Railway URL (no port needed)
-                const backend = this.backendIP || 'rapidride-app-production-82e4.up.railway.app';
+                const backend = this.backendIP || 'rapidride-app-production.up.railway.app';
                 return `https://${backend}/api`;
             }
         },
@@ -67,7 +67,7 @@ if (!window.API_CONFIG) {
                 return 'http://localhost:3000';
             } else {
                 // Production - Railway URL (no port needed)
-                const backend = this.backendIP || 'rapidride-app-production-82e4.up.railway.app';
+                const backend = this.backendIP || 'rapidride-app-production.up.railway.app';
                 return `https://${backend}`;
             }
         },
@@ -77,7 +77,7 @@ if (!window.API_CONFIG) {
             if (this.isLocal) {
                 return 'http://localhost:8001';
             } else {
-                const backend = this.backendIP || 'rapidride-app-production-82e4.up.railway.app';
+                const backend = 'rapidride-app-production-82e4.up.railway.app';
                 return `https://${backend}`;
             }
         }
