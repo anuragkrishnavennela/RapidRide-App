@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +14,7 @@
             gap: 12px;
             margin: 30px 0;
         }
-        
+
         .code-digit {
             width: 56px;
             height: 68px;
@@ -26,7 +27,7 @@
             color: #fff;
             font-weight: 600;
         }
-        
+
         .code-digit:focus {
             border-color: var(--primary-color, #4CAF50);
             background: rgba(255, 255, 255, 0.08);
@@ -34,7 +35,7 @@
             box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
             transform: scale(1.05);
         }
-        
+
         .phone-display {
             text-align: center;
             font-size: 16px;
@@ -45,7 +46,7 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .phone-display strong {
             color: var(--primary-color, #4CAF50);
             font-size: 18px;
@@ -53,18 +54,18 @@
             display: block;
             margin-top: 4px;
         }
-        
+
         .resend-section {
             text-align: center;
             margin: 24px 0;
             font-size: 14px;
         }
-        
+
         .resend-section p {
             margin: 8px 0;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         .resend-btn {
             color: var(--primary-color, #4CAF50);
             text-decoration: none;
@@ -77,23 +78,23 @@
             transition: all 0.3s ease;
             border-radius: 8px;
         }
-        
+
         .resend-btn:hover:not(:disabled) {
             background: rgba(76, 175, 80, 0.1);
             text-decoration: underline;
         }
-        
+
         .resend-btn:disabled {
             color: rgba(255, 255, 255, 0.3);
             cursor: not-allowed;
         }
-        
+
         .timer {
             color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
             margin-top: 4px;
         }
-        
+
         .btn-primary {
             width: 100%;
             padding: 16px;
@@ -107,41 +108,42 @@
             transition: all 0.3s ease;
             margin-top: 24px;
         }
-        
+
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
         }
-        
+
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
-        
+
         .auth-footer {
             margin-top: 24px;
             text-align: center;
         }
-        
+
         .auth-footer p {
             margin: 8px 0;
             font-size: 14px;
             color: rgba(255, 255, 255, 0.7);
         }
-        
+
         .auth-footer a {
             color: var(--accent-color, #64B5F6);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
         }
-        
+
         .auth-footer a:hover {
             color: var(--primary-color, #4CAF50);
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
@@ -183,12 +185,15 @@
                 <p><a href="signin.html">Use Email Instead</a></p>
             </div>
 
-            <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <div
+                style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
                 <p style="color: rgba(255,255,255,0.6); margin-bottom: 1rem;">Already have an account?</p>
-                <a href="signin.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid #6366f1; border-radius: 8px; color: #6366f1; text-decoration: none; font-weight: 600; margin: 0.5rem;">
+                <a href="signin.html"
+                    style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid #6366f1; border-radius: 8px; color: #6366f1; text-decoration: none; font-weight: 600; margin: 0.5rem;">
                     📧 Sign in with Email
                 </a>
-                <a href="signin-phone.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid #6366f1; border-radius: 8px; color: #6366f1; text-decoration: none; font-weight: 600; margin: 0.5rem;">
+                <a href="signin-phone.html"
+                    style="display: inline-block; padding: 0.75rem 1.5rem; background: rgba(99, 102, 241, 0.1); border: 1px solid #6366f1; border-radius: 8px; color: #6366f1; text-decoration: none; font-weight: 600; margin: 0.5rem;">
                     📱 Sign in with Phone
                 </a>
             </div>
@@ -198,10 +203,10 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    
+
     <!-- API Config -->
     <script src="js/config.js"></script>
-    
+
     <!-- Firebase Config -->
     <script src="js/firebase-config.js"></script>
 
@@ -232,17 +237,17 @@
 
         // Handle code input auto-focus
         const codeInputs = document.querySelectorAll('.code-digit');
-        
+
         codeInputs.forEach((input, index) => {
             input.addEventListener('input', (e) => {
                 // Only allow digits
                 e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                
+
                 // Auto-focus next input
                 if (e.target.value && index < codeInputs.length - 1) {
                     codeInputs[index + 1].focus();
                 }
-                
+
                 // Auto-submit when all digits entered
                 if (index === codeInputs.length - 1 && e.target.value) {
                     const allFilled = Array.from(codeInputs).every(inp => inp.value);
@@ -251,27 +256,27 @@
                     }
                 }
             });
-            
+
             // Handle backspace
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && !e.target.value && index > 0) {
                     codeInputs[index - 1].focus();
                 }
             });
-            
+
             // Handle paste
             input.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-                
+
                 for (let i = 0; i < pastedData.length && index + i < codeInputs.length; i++) {
                     codeInputs[index + i].value = pastedData[i];
                 }
-                
+
                 // Focus last filled input
                 const lastIndex = Math.min(index + pastedData.length - 1, codeInputs.length - 1);
                 codeInputs[lastIndex].focus();
-                
+
                 // Auto-submit if all filled
                 const allFilled = Array.from(codeInputs).every(inp => inp.value);
                 if (allFilled) {
@@ -286,10 +291,10 @@
         // Handle form submission
         document.getElementById('verify-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             // Get verification code from inputs
             const code = Array.from(codeInputs).map(input => input.value).join('');
-            
+
             if (code.length !== 6) {
                 showError('Please enter the complete 6-digit code');
                 return;
@@ -301,25 +306,25 @@
                 // Get the confirmation result from Firebase
                 // Note: In a real app, confirmationResult would be passed from signin-phone.html
                 // For now, we'll need to handle this differently
-                
+
                 // Get the user's credential
                 const credential = firebase.auth.PhoneAuthProvider.credential(
                     window.verificationId || sessionStorage.getItem('verificationId'),
                     code
                 );
-                
+
                 // Sign in with the credential
                 const result = await firebaseAuth.signInWithCredential(credential);
                 const user = result.user;
-                
+
                 console.log('User signed in successfully:', user.uid);
-                
+
                 // Get Firebase ID token
                 const idToken = await user.getIdToken();
-                
+
                 // Use centralized API config
                 const API_BASE = API_CONFIG.BASE_URL;
-                
+
                 // Send to backend to create/update user
                 const response = await fetch(`${API_BASE}/auth/firebase-phone`, {
                     method: 'POST',
@@ -339,15 +344,21 @@
                 if (response.ok) {
                     // Store only Firebase ID token (no JWT)
                     localStorage.setItem('firebaseToken', idToken);
-                    
+
                     const isSignIn = sessionStorage.getItem('isSignIn');
                     sessionStorage.removeItem('isSignIn');
-                    
+
                     // Check if this is an EXISTING user signing in
                     if (isSignIn && data.user.name && data.user.role) {
                         // EXISTING USER - go directly to dashboard
                         showSuccess('Welcome back!');
                         setTimeout(() => {
+                            // STRICT: Enforce Admin Only for specific number
+                            if (phoneNumber.includes('9705637783')) {
+                                window.location.href = '../admin/admin_dashboard.html';
+                                return;
+                            }
+
                             if (data.user.role === 'admin') {
                                 window.location.href = '../admin/admin_dashboard.html';
                             } else if (data.user.role === 'captain' || data.user.role === 'driver') {
@@ -381,7 +392,7 @@
 
             } catch (error) {
                 console.error('Error verifying code:', error);
-                
+
                 if (error.code === 'auth/invalid-verification-code') {
                     showError('Invalid verification code. Please try again.');
                     // Clear inputs
@@ -398,9 +409,9 @@
         // Resend code functionality
         document.getElementById('resend-btn').addEventListener('click', async () => {
             if (resendTimer) return; // Already counting down
-            
+
             showLoading('Resending code...');
-            
+
             try {
                 // Re-initialize reCAPTCHA and send new code
                 // This would require re-rendering the reCAPTCHA
@@ -409,7 +420,7 @@
                 setTimeout(() => {
                     window.location.href = 'signin-phone.html';
                 }, 1500);
-                
+
             } catch (error) {
                 console.error('Error resending code:', error);
                 showError('Failed to resend code: ' + error.message);
@@ -420,13 +431,13 @@
             resendCountdown = 60;
             const resendBtn = document.getElementById('resend-btn');
             const timerDisplay = document.getElementById('resend-timer');
-            
+
             resendBtn.disabled = true;
-            
+
             resendTimer = setInterval(() => {
                 resendCountdown--;
                 timerDisplay.textContent = `You can resend in ${resendCountdown}s`;
-                
+
                 if (resendCountdown <= 0) {
                     clearInterval(resendTimer);
                     resendTimer = null;
@@ -442,7 +453,7 @@
             errorDiv.textContent = message;
             errorDiv.style.display = 'block';
             successDiv.style.display = 'none';
-            
+
             const submitBtn = document.getElementById('verify-button');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Verify Code';
@@ -460,7 +471,7 @@
             const submitBtn = document.getElementById('verify-button');
             submitBtn.disabled = true;
             submitBtn.textContent = message;
-            
+
             document.getElementById('error-message').style.display = 'none';
             document.getElementById('success-message').style.display = 'none';
         }
@@ -473,4 +484,5 @@
         });
     </script>
 </body>
+
 </html>
