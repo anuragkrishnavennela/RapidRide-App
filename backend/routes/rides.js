@@ -385,19 +385,57 @@ router.get('/route', firebaseAuthMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Pickup and drop coordinates required' });
     }
 
-    // Use stable German OSRM server instead of project-osrm.org
-    const osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${pickup};${drop}?overview=full&geometries=geojson`;
+    // 1. Try OpenRouteService (if Key available)
+    const orsKey = process.env.ORS_API_KEY;
+    if (orsKey) {
+      try {
+        const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?start=${pickup}&end=${drop}`;
+        console.log('🗺️ Trying ORS Routing...');
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
 
+        const orsResponse = await fetch(orsUrl, {
+          headers: { 'Authorization': orsKey },
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+
+        if (orsResponse.ok) {
+          const data = await orsResponse.json();
+          // Convert ORS GeoJSON to OSRM format
+          if (data.features && data.features.length > 0) {
+            console.log('✅ ORS Success');
+            const feature = data.features[0];
+            return res.json({
+              code: 'Ok',
+              routes: [{
+                geometry: feature.geometry,
+                distance: feature.properties.summary.distance,
+                duration: feature.properties.summary.duration,
+                weight_name: 'ors',
+                weight: feature.properties.summary.duration
+              }]
+            });
+          }
+        } else {
+          console.warn(`⚠️ ORS Request Failed: ${orsResponse.status}`);
+        }
+      } catch (orsErr) {
+        console.warn('⚠️ ORS Error:', orsErr.message);
+      }
+    }
+
+    // 2. Fallback to Stable OSRM (German Server)
+    console.log('🔄 Falling back to OSRM (openstreetmap.de)...');
+    const osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${pickup};${drop}?overview=full&geometries=geojson`;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000); // 3s Timeout
+    const timeout = setTimeout(() => controller.abort(), 3000);
 
     const response = await fetch(osrmUrl, { signal: controller.signal });
     clearTimeout(timeout);
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`❌ OSRM Error (${response.status}):`, errorText);
-      throw new Error(`OSRM responded with ${response.status}: ${errorText}`);
+      throw new Error(`OSRM responded with ${response.status}`);
     }
 
     const data = await response.json();
