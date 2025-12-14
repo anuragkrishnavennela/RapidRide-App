@@ -896,21 +896,43 @@
         // If that fails (CORS/Error), fall back to Backend Proxy
 
         let data = null;
+        let route = null;
         try {
-          const route = await RapidRideRouting.getRoute(
+          // 1. Try Client-Side OSRM (Fastest, no server load)
+          route = await RapidRideRouting.getRoute(
             { lat: pickupLat, lng: pickupLon },
             { lat: dropLat, lng: dropLon }
           );
 
           if (route) {
+            console.log('✅ Client-side routing success');
             data = { routes: [route] };
-            console.log('✅ Routing Success');
           } else {
-            throw new Error('Routing failed');
+            throw new Error('Client-side routing failed');
           }
         } catch (clientError) {
-          console.warn('⚠️ Routing failed:', clientError);
-          // Fallback to straight line handled outside or just fail gracefully
+          console.warn('⚠️ Client-side routing failed, trying backend proxy:', clientError);
+
+          // 2. Fallback to Backend Proxy (Reliable, handles CORS/Secrets)
+          try {
+            // Backend expects "lon,lat" format
+            const pickupStr = `${pickupLon},${pickupLat}`;
+            const dropStr = `${dropLon},${dropLat}`;
+            const token = localStorage.getItem('token');
+
+            const response = await fetch(`${API_CONFIG.BASE_URL}/rides/route?pickup=${pickupStr}&drop=${dropStr}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) throw new Error('Backend routing failed');
+
+            data = await response.json();
+            console.log('✅ Backend routing success');
+          } catch (backendError) {
+            console.error('❌ All routing attempts failed:', backendError);
+            showError('Could not calculate route. Please try again.');
+            return;
+          }
         }
 
         if (data && data.routes && data.routes.length > 0) {
