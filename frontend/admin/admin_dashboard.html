@@ -766,13 +766,29 @@
       }
     });
 
-    // Preserve token periodically
-    setInterval(preserveToken, 5000);
+    // Track the interval so we can clear it on logout
+    const preservationInterval = setInterval(preserveToken, 5000);
 
     async function logout() {
       if (confirm('Are you sure you want to logout?')) {
-        await Auth.logout();
-        window.location.href = '../common/signin.html';
+        // 1. Stop preservation immediately
+        clearInterval(preservationInterval);
+
+        // 2. Clear all auth storage
+        localStorage.removeItem('token');
+        localStorage.removeItem('rr_token');
+        sessionStorage.removeItem('token_backup');
+        document.cookie = 'admin_token=; path=/; max-age=0'; // Expire cookie
+
+        // 3. Clear Firebase auth if present
+        if (typeof firebase !== 'undefined' && firebase.auth()) {
+          try {
+            await firebase.auth().signOut();
+          } catch (e) { console.warn('Firebase signout error', e); }
+        }
+
+        // 4. Redirect to ADMIN login
+        window.location.href = 'admin_login.html';
       }
     }
 
@@ -786,6 +802,38 @@
       document.getElementById(`${tab}-tab`).classList.add('active');
     }
 
+    // Toast Notification System
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.textContent = message;
+
+      // Style it dynamically if CSS isn't present
+      Object.assign(toast.style, {
+        position: 'fixed',
+        bottom: '20px',
+        right: '20px',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        background: type === 'error' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(15, 23, 42, 0.9)',
+        color: 'white',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
+        zIndex: '10000',
+        animation: 'slideUp 0.3s ease',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+      });
+
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
     // Chat management variables
     let allChats = [];
     let currentChatId = null;
@@ -795,6 +843,10 @@
     async function loadDashboardData() {
       try {
         const token = localStorage.getItem('token');
+        if (!token) return; // Silent return, let auth check handle it
+
+        // Show loading state implies robustness
+        // document.body.style.cursor = 'wait';
 
         // Fetch users from backend
         const response = await fetch(`${API_CONFIG.BASE_URL}/auth/admin/users`, {
