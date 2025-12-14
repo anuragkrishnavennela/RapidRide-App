@@ -354,16 +354,24 @@ router.post('/complete-profile', firebaseAuthMiddleware, async (req, res) => {
 
 router.get('/me', firebaseAuthMiddleware, async (req, res) => {
   try {
-    const uid = req.firebaseUser.uid;
+    let user;
 
-    // Find user in MongoDB (Standardized)
-    const user = await findUserByFirebaseAuth({ uid });
+    // 1. Try finding by Custom JWT (MongoDB ID)
+    if (req.user && req.user.id) {
+      user = await User.findById(req.user.id);
+    }
+
+    // 2. Try finding by Firebase UID
+    if (!user && req.firebaseUser && req.firebaseUser.uid) {
+      const uid = req.firebaseUser.uid;
+      user = await findUserByFirebaseAuth({ uid });
+    }
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('✅ Returning user:', user.name, user.role);
+    // console.log('✅ Returning user:', user.name, user.role);
     res.json({
       success: true,
       user: {
