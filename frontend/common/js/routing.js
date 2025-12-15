@@ -23,51 +23,7 @@
                 return null;
             }
 
-            // 1. OpenRouteService (High Quality, requires Key)
-            // ----------------------------------------------------
-            // 🔑 Key provided by User
-            const ORS_API_KEY = '5b3ce3597851110001cf62487e7a697be3534d1b8544a0160b8c644e';
-            // ----------------------------------------------------
-
-            if (ORS_API_KEY && ORS_API_KEY !== 'YOUR_API_KEY_HERE') {
-                try {
-                    // Use api_key query param to avoid CORS preflight issues with custom headers
-                    const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${ORS_API_KEY}&start=${startLng},${startLat}&end=${endLng},${endLat}`;
-
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
-
-                    const response = await fetch(orsUrl, {
-                        // Remove Authorization header to simplify CORS
-                        headers: {
-                            'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8'
-                        },
-                        signal: controller.signal
-                    });
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        // ORS returns GeoJSON FeatureCollection. Convert to OSRM format for compatibility.
-                        if (data.features && data.features.length > 0) {
-                            const feature = data.features[0];
-                            return {
-                                geometry: feature.geometry,
-                                distance: feature.properties.summary.distance,
-                                duration: feature.properties.summary.duration,
-                                weight_name: 'ors',
-                                weight: feature.properties.summary.duration
-                            };
-                        }
-                    } else {
-                        console.warn('⚠️ ORS Failed:', response.status);
-                    }
-                } catch (err) {
-                    console.warn('⚠️ ORS Error:', err.message);
-                }
-            }
-
-            // 2. OSRM Public Servers (Mirrors for robustness)
+            // 1. OSRM Public Servers (Mirrors for robustness)
             // Prioritize openstreetmap.de (More stable) over project-osrm.org
             const mirrors = [
                 'https://routing.openstreetmap.de/routed-car/route/v1/driving',
@@ -78,7 +34,7 @@
                 const url = `${baseUrl}/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson`;
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s Timeout
+                    const timeoutId = setTimeout(() => controller.abort(), 3000); // Increased to 3s
 
                     const response = await fetch(url, { signal: controller.signal });
                     clearTimeout(timeoutId);
@@ -94,8 +50,8 @@
                 }
             }
 
-            console.error('❌ All client-side routing attempts failed.');
-            return null;
+            console.warn('⚠️ All client-side OSRM mirrors failed/timed out. Falling back to Backend Proxy...');
+            return null; // Will trigger fallback in book_ride.html
         }
     };
 
