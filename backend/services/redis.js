@@ -9,6 +9,11 @@ const { createClient } = require('redis');
 const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
 const KEY_PREFIX = 'rr:';
 
+// Debug: Check what URL is being used
+console.log(`🔌 Redis Config: URL is ${REDIS_URL.includes('localhost') ? 'LOCALHOST (Default)' : 'SET (External)'}`);
+if (!process.env.REDIS_URL) console.warn('⚠️ WARNING: REDIS_URL env var is MISSING. Defaulting to localhost.');
+
+
 // TTL values (in seconds)
 const TTL = {
     RIDE: 120,        // 2 minutes for ride data
