@@ -386,18 +386,18 @@ router.get('/route', firebaseAuthMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'Pickup and drop coordinates required' });
     }
 
-    // 1. Try OpenRouteService (if Key available)
+    // 1. Try OpenRouteService (Priority 1)
     const orsKey = process.env.ORS_API_KEY;
-    console.log(`🔍 DEBUG ROUNTING: Key available? ${!!orsKey}, Length: ${orsKey ? orsKey.length : 0}`);
+    console.log(`🔍 DEBUG ROUNTING: Key available? ${!!orsKey}`);
 
     if (orsKey) {
       try {
+        console.log('🗺️ Priority 1: Trying OpenRouteService...');
         // Use api_key query parameter instead of Header
         const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${orsKey}&start=${pickup}&end=${drop}`;
-        console.log('🗺️ Trying ORS Routing (Query Param)...');
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); // Increased to 10s to match/exceed test script
+        const timeout = setTimeout(() => controller.abort(), 10000);
 
         const orsResponse = await fetch(orsUrl, {
           headers: {
@@ -411,9 +411,8 @@ router.get('/route', firebaseAuthMiddleware, async (req, res) => {
 
         if (orsResponse.ok) {
           const data = await orsResponse.json();
-          // Convert ORS GeoJSON to OSRM format
           if (data.features && data.features.length > 0) {
-            console.log('✅ ORS Success in Backend!');
+            console.log('✅ ORS Success (Priority 1 Used)');
             const feature = data.features[0];
             return res.json({
               code: 'Ok',
@@ -425,23 +424,19 @@ router.get('/route', firebaseAuthMiddleware, async (req, res) => {
                 weight: feature.properties.summary.duration
               }]
             });
-          } else {
-            console.warn('⚠️ ORS returned OK but no features/routes found.');
           }
-        } else {
-          const errText = await orsResponse.text();
-          console.warn(`⚠️ ORS Request Failed: ${orsResponse.status} - ${errText}`);
         }
       } catch (orsErr) {
-        console.warn(`⚠️ ORS Error: ${orsErr.name === 'AbortError' ? 'TIMEOUT' : orsErr.message}`);
+        console.warn(`⚠️ ORS Failed: ${orsErr.message}`);
       }
     }
 
-    // 2. Fallback to Stable OSRM (German Server)
-    console.log('🔄 Falling back to OSRM (openstreetmap.de)...');
+    // 2. Fallback to OSRM (Priority 2)
+    console.log('🔄 Priority 2: Falling back to OSRM...');
     const osrmUrl = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${pickup};${drop}?overview=full&geometries=geojson`;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
+    // Increase timeout to 8 seconds for Railway latency
+    const timeout = setTimeout(() => controller.abort(), 8000);
 
     const response = await fetch(osrmUrl, { signal: controller.signal });
     clearTimeout(timeout);
@@ -454,7 +449,7 @@ router.get('/route', firebaseAuthMiddleware, async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('❌ Routing Proxy Error:', error.message);
-    console.warn('⚠️ OSRM failed, falling back to straight-line calculation');
+    console.warn('⚠️ Priority 3: Falling back to Straight-Line Calculation');
 
     // Parse coordinates from request query (as try-block variables are scoped)
     const { pickup, drop } = req.query;

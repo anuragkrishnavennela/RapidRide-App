@@ -31,6 +31,16 @@ const redis = require('./services/redis');
 const { register: metricsRegister, metricsMiddleware, socketConnectionsGauge } = require('./services/metrics');
 const logger = require('./services/logger');
 
+// Database connection is handled later, but we can check ML service immediately
+(async () => {
+  try {
+    const isMLConnected = await fastapi.healthCheck();
+    console.log(isMLConnected ? '✅ Connected to ML Service (FastAPI)' : '⚠️ Could not connect to ML Service (FastAPI)');
+  } catch (e) {
+    console.log('⚠️ ML Service Health Check Error');
+  }
+})();
+
 const app = express();
 // Trust proxy for Railway/production deployment
 app.set('trust proxy', true);
@@ -247,15 +257,6 @@ const socketAuthMiddleware = async (socket, next) => {
 
     // Use Firebase Admin SDK to verify token
     const { admin, firebaseInitialized } = require('./config/firebase');
-    const fastapi = require('./services/fastapi');
-
-    // Initialize services
-    (async () => {
-      // Check ML Service Health
-      const isMLConnected = await fastapi.healthCheck();
-      console.log(isMLConnected ? '✅ Connected to ML Service (FastAPI)' : '⚠️ Could not connect to ML Service (FastAPI)');
-    })();
-
 
     if (!firebaseInitialized) {
       console.warn('Firebase not initialized, skipping WebSocket auth');
