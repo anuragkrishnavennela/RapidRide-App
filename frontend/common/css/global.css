@@ -1,30 +1,44 @@
-/* Global Design System - Premium Glassmorphism & Mesh Gradients */
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap");
+/* Global Design System - Sand & Sunset Theme (Refined) */
+/* Palette: Sand (#FBF9F4) - Blush (#FAE1DD) - Warm Black (#1C1917) */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
 
 :root {
-  /* Palette: Deep Space & Neon Accents */
-  --bg-dark: #0f172a;
-  --bg-gradient-start: #0f172a;
-  --bg-gradient-end: #1e1b4b;
+  /* Core Colors */
+  --bg-sand: #FBF9F4;
+  --bg-white: #ffffff;
 
-  --primary: #6366f1; /* Indigo 500 */
-  --primary-glow: rgba(99, 102, 241, 0.5);
-  --secondary: #ec4899; /* Pink 500 */
-  --secondary-glow: rgba(236, 72, 153, 0.5);
-  --accent: #8b5cf6; /* Violet 500 */
+  --primary: #1C1917;
+  /* Warm Black as primary for buttons/text */
+  --primary-glow: rgba(28, 25, 23, 0.2);
 
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --secondary: #D4AF37;
+  /* Gold Accent */
+  --secondary-glow: rgba(212, 175, 55, 0.3);
 
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --accent-blush: #FAE1DD;
+  /* Soft Pink */
+
+  /* Glass & Borders */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  /* Dark sensitive border */
+  --glass-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --text-main: #1C1917;
+  --text-secondary: #57534E;
+  --text-muted: #78716c;
 
   --font-main: "Outfit", sans-serif;
 
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
+  /* Spacing & Radius - ULTRA ROUND */
+  --radius-lg: 32px;
+  /* Super soft cards */
+  --radius-md: 24px;
+  --radius-sm: 16px;
+  /* Even small inputs are round */
+  --radius-pill: 9999px;
+  /* Bubble buttons */
 }
 
 /* Reset & Base */
@@ -38,14 +52,15 @@
 
 body {
   font-family: var(--font-main);
-  background: var(--bg-dark);
+  background-color: var(--bg-sand);
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
   position: relative;
+  line-height: 1.6;
 }
 
-/* Animated Mesh Gradient Background */
+/* Subtle Gradient Background (Light) */
 body::before {
   content: "";
   position: fixed;
@@ -53,32 +68,19 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(
-      circle at 15% 50%,
-      var(--primary-glow),
-      transparent 25%
-    ),
-    radial-gradient(circle at 85% 30%, var(--secondary-glow), transparent 25%);
+  background:
+    radial-gradient(circle at 10% 20%, rgba(250, 225, 221, 0.4), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 175, 55, 0.15), transparent 40%);
   z-index: -1;
-  animation: pulseGlow 10s ease-in-out infinite alternate;
-}
-
-@keyframes pulseGlow {
-  0% {
-    opacity: 0.5;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
+  pointer-events: none;
 }
 
 a {
   text-decoration: none;
   color: inherit;
-  transition: 0.3s;
+  transition: 0.2s;
 }
+
 ul {
   list-style: none;
 }
@@ -93,72 +95,93 @@ h6 {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  color: var(--text-main);
 }
 
-/* Glassmorphism Components */
+/* Components */
+
+/* Glass Card (Light Mode) */
 .glass-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-white);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--glass-shadow);
   padding: 2rem;
 }
 
-.glass-header {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(10px);
+/* Navbar - Matching Landing Page */
+.navbar {
+  background: rgba(251, 249, 244, 0.95);
+  /* Solid Sand/White mix */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--glass-border);
-  padding: 1rem 2rem;
+  height: 80px;
+  padding: 0 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
 }
 
-/* Buttons */
+/* Common Container override to match landing page width */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  /* Consistent padding */
+}
+
+/* Buttons - BUBBLE STYLE */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
+  padding: 1rem 2rem;
+  /* Larger touch targets */
+  border-radius: var(--radius-pill) !important;
+  /* Force Bubble */
+  font-weight: 700;
+  letter-spacing: 0.02em;
   cursor: pointer;
   border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Bouncy transition */
   font-size: 1rem;
   gap: 0.5rem;
+  text-transform: uppercase;
+  font-size: 0.9rem;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, #1C1917, #44403c);
   color: white;
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px var(--primary-glow);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: white;
+  color: var(--text-main);
+  border: 1px solid #e5e5e5;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--primary);
+  background: #fafafa;
   transform: translateY(-2px);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  background: #ef4444;
   color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
 /* Forms */
@@ -169,28 +192,27 @@ h6 {
 
 .input-field {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--glass-border);
+  background: white;
+  border: 1px solid #e5e5e5;
   border-radius: var(--radius-sm);
   padding: 1rem;
-  color: white;
+  color: var(--text-main);
   font-family: var(--font-main);
   font-size: 1rem;
-  transition: 0.3s;
+  transition: 0.2s;
 }
 
 .input-field:focus {
   outline: none;
   border-color: var(--primary);
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: 0 0 0 2px var(--primary-glow);
+  box-shadow: 0 0 0 3px rgba(28, 25, 23, 0.1);
 }
 
 label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
@@ -201,32 +223,20 @@ label {
   padding: 0 1.5rem;
 }
 
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.flex-col {
-  display: flex;
-  flex-direction: column;
-}
-.gap-4 {
-  gap: 1rem;
-}
-.gap-2 {
-  gap: 0.5rem;
-}
-.mt-4 {
-  margin-top: 1rem;
-}
-.mb-4 {
-  margin-bottom: 1rem;
-}
 .text-center {
   text-align: center;
 }
+
 .w-full {
   width: 100%;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
 }
 
 /* Animations */
@@ -234,6 +244,7 @@ label {
   animation: fadeIn 0.5s ease-out forwards;
   opacity: 0;
 }
+
 @keyframes fadeIn {
   to {
     opacity: 1;
@@ -245,9 +256,155 @@ label {
   opacity: 0;
   transform: translateY(20px);
 }
+
 @keyframes slideUp {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Footer (Ported from Landing Page) */
+footer {
+  background: white;
+  padding: 4rem 0;
+  border-top: 1px solid #f0f0f0;
+  margin-top: 4rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+}
+
+.footer-brand h3 {
+  margin-bottom: 1rem;
+}
+
+footer h4 {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+footer ul {
+  list-style: none;
+}
+
+footer ul li {
+  margin-bottom: 0.75rem;
+}
+
+footer a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+
+  /* Assuming a common breakpoint for mobile */
+  .footer-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 2rem;
+  }
+
+  /* Mobile Typography & Spacing */
+  h1 {
+    font-size: 2.5rem !important;
+    /* Scale down from 3.5rem */
+  }
+
+  .container {
+    padding: 0 1rem;
+    /* tighter padding on mobile */
+  }
+
+  .navbar {
+    padding: 0 1rem;
+    /* consistent with container */
+  }
+}
+
+/* CAROUSEL STYLES (Ported from Landing Page) */
+/* SERVICE GRID/CAROUSEL (Responsive) */
+
+/* Desktop: Cleaner Grid Layout (Match Index.html) */
+.carousel-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* Strict 4 columns */
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+/* Base Card Styles (Shared) */
+.carousel-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem;
+  padding-bottom: 3rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--glass-border);
+  transition: transform 0.2s;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  /* Equal height */
+}
+
+.carousel-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--secondary);
+}
+
+.carousel-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.carousel-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.carousel-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+
+/* Mobile Overrides: Horizontal Carousel */
+@media (max-width: 900px) {
+  .carousel-container {
+    display: flex;
+    overflow-x: auto;
+    grid-template-columns: none;
+    flex-wrap: nowrap;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 2rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-card {
+    min-width: 200px;
+    flex: 0 0 auto;
+    /* Prevent shrinking */
+    scroll-snap-align: start;
+    margin-right: 0;
   }
 }

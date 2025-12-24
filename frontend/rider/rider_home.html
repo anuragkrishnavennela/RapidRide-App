@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,736 +8,44 @@
   <link rel="stylesheet" href="../common/css/global.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    body {
-      padding: 0;
-      margin: 0;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--glass-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .mini-logo {
-      height: 40px;
-    }
-
-    .profile-btn {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: var(--primary);
-      border: 2px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: white;
-      overflow: hidden;
-    }
-
-    .profile-btn img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .notification-btn,
-    .track-ride-btn {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-
-    .notification-btn:hover,
-    .track-ride-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: var(--primary);
-      transform: scale(1.05);
-    }
-
-    .notification-btn:active,
-    .track-ride-btn:active {
-      transform: scale(0.95);
-    }
-
-    .notification-btn svg,
-    .track-ride-btn svg {
-      width: 22px;
-      height: 22px;
-      stroke: white;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      width: 18px;
-      height: 18px;
-      background: #ef4444;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: white;
-      border: 2px solid rgba(15, 23, 42, 0.8);
-    }
-
-    .notification-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .notification-modal-content {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 0;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .notification-header {
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid var(--glass-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .notification-header h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .notification-close {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .notification-close:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.1);
-    }
-
-    .notification-close svg {
-      width: 18px;
-      height: 18px;
-      stroke: white;
-    }
-
-    .notification-list {
-      overflow-y: auto;
-      max-height: calc(80vh - 100px);
-      padding: 1rem;
-    }
-
-    .notification-item {
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      margin-bottom: 0.75rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .notification-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: var(--primary);
-      transform: translateX(5px);
-    }
-
-    .notification-item.unread {
-      border-left: 4px solid var(--primary);
-      background: rgba(139, 92, 246, 0.1);
-    }
-
-    .notification-title {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .notification-time {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.5rem;
-    }
-
-    .notification-empty {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: var(--text-muted);
-    }
-
-    .notification-empty-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
-    }
-
-    /* Track Ride Modal */
-    .track-ride-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .track-ride-modal-content {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 0;
-      max-width: 900px;
-      width: 90%;
-      max-height: 90vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .track-ride-header {
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid var(--glass-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .track-ride-header h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .track-ride-close {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .track-ride-close:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: scale(1.1);
-    }
-
-    .track-ride-close svg {
-      width: 18px;
-      height: 18px;
-      stroke: white;
-    }
-
-    .track-ride-body {
-      overflow-y: auto;
-      flex: 1;
-      padding: 1.5rem;
-    }
-
-    .no-ride-state {
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-
-    .no-ride-icon {
-      font-size: 5rem;
-      margin-bottom: 1.5rem;
-      opacity: 0.6;
-    }
-
-    .no-ride-state h3 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .no-ride-state p {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-    }
-
-    .btn-book-ride {
-      padding: 1rem 2.5rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border: none;
-      border-radius: 15px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-book-ride:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-    }
-
-    .active-ride-state {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .ride-map-container {
-      width: 100%;
-      height: 400px;
-      border-radius: 15px;
-      overflow: hidden;
-      border: 1px solid var(--glass-border);
-    }
-
-    .ride-details-grid {
+    /* Scoped Dashboard Styles */
+    .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .ride-detail-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .ride-detail-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .ride-detail-value {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .driver-info-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    .driver-avatar {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      font-weight: 700;
-      color: white;
-    }
-
-    .driver-details {
-      flex: 1;
-    }
-
-    .driver-name {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 0.25rem;
-    }
-
-    .driver-phone {
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .vehicle-info {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
-    }
-
-    .vehicle-badge {
-      padding: 0.35rem 0.75rem;
-      background: rgba(139, 92, 246, 0.1);
-      border: 1px solid var(--primary);
-      border-radius: 8px;
-      font-size: 0.85rem;
-    }
-
-    .otp-card {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: center;
-    }
-
-    .otp-label {
-      font-size: 0.9rem;
-      opacity: 0.9;
-      margin-bottom: 0.5rem;
-    }
-
-    .otp-value {
-      font-size: 3rem;
-      font-weight: 700;
-      letter-spacing: 0.5rem;
-      font-family: 'Courier New', monospace;
-    }
-
-    .ride-action-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .btn-cancel-ride {
-      flex: 1;
-      padding: 1rem;
-      background: rgba(239, 68, 68, 0.1);
-      border: 2px solid #ef4444;
-      border-radius: 12px;
-      font-size: 1rem;
-      font-weight: 600;
-      color: #ef4444;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-cancel-ride:hover {
-      background: rgba(239, 68, 68, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .location-marker {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      margin-bottom: 0.75rem;
-    }
-
-    .marker-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    .marker-icon.pickup {
-      background: rgba(34, 197, 94, 0.2);
-      border: 2px solid #22c55e;
-    }
-
-    .marker-icon.drop {
-      background: rgba(239, 68, 68, 0.2);
-      border: 2px solid #ef4444;
-    }
-
-    .marker-text {
-      flex: 1;
-    }
-
-    .marker-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .marker-address {
-      font-weight: 600;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-
-    .locate-btn {
-      position: absolute;
-      bottom: 15px;
-      right: 15px;
-      z-index: 1000;
-      width: 40px;
-      height: 40px;
-      background: white;
-      border: 2px solid rgba(0, 0, 0, 0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    .locate-btn:hover {
-      background: #f5f5f5;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transform: scale(1.05);
-    }
-
-    .locate-btn:active {
-      transform: scale(0.95);
-    }
-
-    .locate-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    .welcome-section {
-      margin-bottom: 2rem;
-    }
-
-    .welcome-title {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(to right, var(--text-main), var(--primary));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .welcome-subtitle {
-      color: var(--text-muted);
-      font-size: 1.1rem;
-    }
-
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 2fr 1fr;
       gap: 2rem;
-      margin-bottom: 2rem;
+      margin-top: 2rem;
     }
 
-    @media (max-width: 1024px) {
-      .grid-layout {
+    @media (max-width: 900px) {
+      .dashboard-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .quick-actions {
-      display: grid;
-      grid-template-columns: 1fr;
+    .recent-ride-item {
+      display: flex;
+      align-items: center;
       gap: 1rem;
-    }
-
-    .action-card {
-      background: var(--glass-bg);
-      border: 2px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 2rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      text-align: center;
-    }
-
-    .action-card:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--primary);
-      transform: translateY(-5px);
-    }
-
-    .action-icon {
-      font-size: 3rem;
+      padding: 1rem;
+      background: white;
+      border-radius: var(--radius-md);
       margin-bottom: 1rem;
-    }
-
-    .action-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .action-desc {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .stat-card {
-      background: var(--glass-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: center;
+      transition: 0.2s;
     }
 
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .section-card {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .section-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .recent-rides {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .ride-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1.2rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .ride-item:hover {
-      background: rgba(255, 255, 255, 0.05);
+    .recent-ride-item:hover {
       border-color: var(--primary);
+      transform: translateX(5px);
     }
 
-    .ride-icon {
-      width: 50px;
-      height: 50px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .ride-details {
-      flex: 1;
-    }
-
-    .ride-route {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .ride-meta {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .ride-fare {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .map-container {
-      position: relative;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      overflow: hidden;
+    .map-preview {
+      width: 100%;
       height: 300px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: 1rem;
+      border: 1px solid var(--glass-border);
     }
 
     #map {
@@ -744,714 +53,262 @@
       height: 100%;
     }
 
-    .quick-links {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
+    /* Section Header Alignment */
+    .section-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 1.5rem;
     }
 
-    .link-card {
-      padding: 1.5rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
+    /* Notification Badge Correction */
+    .notification-btn,
+    .track-ride-btn {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
     }
 
-    .link-card:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--primary);
-    }
-
-    .link-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .link-title {
-      font-weight: 600;
+    .notification-btn:hover,
+    .track-ride-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
     }
   </style>
   <script src="../../../../../../../common/js/config.js"></script>
 </head>
+
 <body>
-  <!-- Notification Modal -->
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;" class="brand"
+      onclick="window.location.href='rider_home.html'">
+      <img src="../assets/logo.png" alt="RapidRide" style="height: 32px; display:none;"
+        onerror="this.style.display='none'">
+      <span>RapidRide</span>
+    </div>
+
+    <!-- Right Side Actions -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="track-ride-btn" onclick="openTrackRideModal()" title="Track Active Ride" style="cursor: pointer;">
+        <span style="font-size: 1.5rem;">📍</span>
+      </div>
+      <div class="notification-btn" onclick="openNotifications()" style="cursor: pointer; position: relative;">
+        <span style="font-size: 1.5rem;">🔔</span>
+        <div class="notification-badge" id="notificationBadge"
+          style="display: none; position: absolute; top: 0; right: 0; background: #ef4444; color: white; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          0</div>
+      </div>
+      <div class="profile-btn" onclick="window.location.href='profile.html'"
+        style="cursor: pointer; width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+        👤
+      </div>
+    </div>
+  </nav>
+
+  <div class="container fade-in" style="min-height: 60vh;">
+
+    <!-- Welcome Section -->
+    <div style="margin: 3rem 0 2rem 0;">
+      <h1 style="font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.1;">Ready to ride?</h1>
+      <p style="font-size: 1.2rem; color: var(--text-secondary);">Select a service to get started.</p>
+    </div>
+
+    <!-- CAROUSEL: Ways to Ride (Replacing Grid) -->
+    <!-- Contains: Bike, Auto, Cab, Intercity, Shuttle, Pooling, Rentals, Lux -->
+    <div class="carousel-container" style="margin-bottom: 4rem; padding-left: 2px;">
+
+      <!-- Bike -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">🏍️</div>
+        <h3>Bike</h3>
+        <p>Fastest</p>
+      </div>
+
+      <!-- Auto -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">🛺</div>
+        <h3>Auto</h3>
+        <p>Affordable</p>
+      </div>
+
+      <!-- Cab -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">🚕</div>
+        <h3>Cab</h3>
+        <p>Comfort</p>
+      </div>
+
+      <!-- Intercity -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">🏙️</div>
+        <h3>Intercity</h3>
+        <p>Outstation</p>
+      </div>
+
+      <!-- Shuttle -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">🚐</div>
+        <h3>Shuttle</h3>
+        <p>Fixed Route</p>
+      </div>
+
+      <!-- Pooling -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">👥</div>
+        <h3>Pooling</h3>
+        <p>Shared</p>
+      </div>
+
+      <!-- Rental -->
+      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
+        <div class="carousel-icon">⏳</div>
+        <h3>Rentals</h3>
+        <p>Hourly</p>
+      </div>
+
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Main Panel: Map -->
+      <div class="glass-card slide-up"
+        style="animation-delay: 0.1s; padding: 0; overflow: hidden; border: 1px solid var(--glass-border);">
+        <div
+          style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0;">Around You</h3>
+          <span style="font-size: 0.9rem; color: var(--text-muted);">Live View</span>
+        </div>
+        <div style="width: 100%; height: 350px;">
+          <div id="map"></div>
+        </div>
+        <div style="padding: 1.5rem; text-align: center;">
+          <button class="btn btn-primary" style="width: 100%;" onclick="window.location.href='book_ride.html'">
+            Book Now
+          </button>
+        </div>
+      </div>
+
+      <!-- Side Panel: Recent / Saved -->
+      <div class="glass-card slide-up" style="animation-delay: 0.2s;">
+        <div class="section-header-row">
+          <h3 style="margin:0;">Recent</h3>
+          <a href="#" style="font-size: 0.9rem; font-weight: 600; color: var(--secondary);">View All</a>
+        </div>
+
+        <div id="recentRidesList">
+          <div class="text-center" style="padding: 1rem; color: var(--text-muted); opacity: 0.7;">
+            No recent rides.
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem;">
+          <h4 style="margin-bottom: 1rem; color: var(--text-secondary);">Saved Places</h4>
+          <div class="recent-ride-item">
+            <span style="font-size: 1.5rem;">🏠</span>
+            <div>
+              <div style="font-weight: 700;">Home</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">Add address</div>
+            </div>
+          </div>
+          <div class="recent-ride-item">
+            <span style="font-size: 1.5rem;">🏢</span>
+            <div>
+              <div style="font-weight: 700;">Work</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted);">Add address</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand" style="text-align: left;">
+          <h3>RapidRide</h3>
+          <p>Simplifying urban mobility<br>for everyone.</p>
+        </div>
+        <div style="text-align: left;">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div style="text-align: left;">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="#">Ride</a></li>
+            <li><a href="#">Drive</a></li>
+          </ul>
+        </div>
+        <div style="text-align: left;">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Safety</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center"
+        style="margin-top: 3rem; padding-top: 3rem; border-top: 1px solid #eee; color: var(--text-muted); font-size: 0.9rem;">
+        &copy; 2025 RapidRide. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modals -->
   <div class="notification-modal" id="notificationModal">
-    <div class="notification-modal-content">
+    <div class="notification-modal-content glass-card">
       <div class="notification-header">
         <h3>Notifications</h3>
-        <div class="notification-close" onclick="closeNotifications()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </div>
+        <div class="notification-close" onclick="closeNotifications()">✕</div>
       </div>
       <div class="notification-list" id="notificationList">
         <div class="notification-empty">
           <div class="notification-empty-icon">🔔</div>
           <p>No notifications yet</p>
-          <p style="font-size: 0.9rem; margin-top: 0.5rem;">We'll notify you about ride updates and offers</p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Track Ride Modal -->
   <div class="track-ride-modal" id="trackRideModal">
-    <div class="track-ride-modal-content">
+    <div class="track-ride-modal-content glass-card">
       <div class="track-ride-header">
-        <h3>Track Your Ride</h3>
-        <div class="track-ride-close" onclick="closeTrackRideModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </div>
+        <h3>Current Ride</h3>
+        <div class="track-ride-close" onclick="closeTrackRideModal()">✕</div>
       </div>
       <div class="track-ride-body" id="trackRideBody">
-        <!-- Content will be dynamically inserted here -->
+        <!-- Dynamic Content -->
       </div>
     </div>
   </div>
 
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="../assets/logo.png" class="mini-logo" alt="RapidRide" onerror="this.style.display='none'">
-      <span style="background: linear-gradient(to right, #fff, #a5b4fc); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">RapidRide</span>
-    </div>
-    <div class="topbar-right">
-      <div class="track-ride-btn" onclick="openTrackRideModal()" title="Track Current Ride">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-          <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path>
-        </svg>
-      </div>
-      <div class="notification-btn" onclick="openNotifications()" title="Notifications">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-      </div>
-      <div class="profile-btn" onclick="window.location.href='profile.html'" id="profileBtn">A</div>
-    </div>
-  </header>
-
-  <main class="container">
-    <!-- Welcome Section -->
-    <section class="welcome-section">
-      <h1 class="welcome-title">Hello, <span id="userName">Rider</span>! 👋</h1>
-      <p class="welcome-subtitle">Where would you like to go today?</p>
-    </section>
-
-    <!-- Main Grid -->
-    <div class="grid-layout">
-      <!-- Quick Actions -->
-      <div class="quick-actions">
-        <div class="action-card" onclick="window.location.href='book_ride.html'">
-          <div class="action-icon">🚗</div>
-          <div class="action-title">Book a Ride</div>
-          <div class="action-desc">Get a ride now or schedule for later</div>
-        </div>
-      </div>
-
-      <!-- Map -->
-      <div class="map-container">
-        <div id="map"></div>
-        <button class="locate-btn" onclick="locateMe()" title="Show my location">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
-            <line x1="12" y1="2" x2="12" y2="6"></line>
-            <line x1="12" y1="18" x2="12" y2="22"></line>
-            <line x1="2" y1="12" x2="6" y2="12"></line>
-            <line x1="18" y1="12" x2="22" y2="12"></line>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Recent Rides -->
-    <section class="section-card">
-      <div class="section-header">
-        <h2 class="section-title">Recent Rides</h2>
-      </div>
-
-      <div id="recentRides" class="recent-rides">
-        <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
-          <p>No rides yet. Book your first ride to get started!</p>
-          <button onclick="window.location.href='book_ride.html'" class="btn btn-primary" style="margin-top: 1rem; padding: 0.75rem 2rem;">Book a Ride</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Quick Links -->
-    <section class="section-card">
-      <div class="section-header">
-        <h2 class="section-title">Quick Links</h2>
-      </div>
-
-      <div class="quick-links">
-        <div class="link-card" onclick="window.location.href='help.html'">
-          <div class="link-icon">❓</div>
-          <div class="link-title">Help & Support</div>
-        </div>
-
-        <div class="link-card" onclick="window.location.href='saved_places.html'">
-          <div class="link-icon">⭐</div>
-          <div class="link-title">Saved Places</div>
-        </div>
-      </div>
-    </section>
-  </main>
-
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="../common/js/firebase-config.js"></script>
-  <script src="../common/js/config.js"></script>
-  <script src="../common/js/auth.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="../js/rider.js"></script>
   <script>
-    let map;
-    let currentLocation = null;
+    const map = L.map('map', { zoomControl: false }).setView([17.3850, 78.4867], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    }).addTo(map);
 
-    // Initialize
-    window.addEventListener('load', async () => {
-      // Wait for Firebase auth to be ready
-      if (typeof firebase !== 'undefined' && firebase.auth) {
-        try {
-          await Promise.race([
-            new Promise((resolve) => {
-              const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-                unsubscribe();
-                if (user) {
-                  console.log('✅ Firebase user authenticated:', user.uid);
-                } else {
-                  console.warn('⚠️ No Firebase user - redirecting to sign in');
-                  window.location.href = '../common/signin-phone.html';
-                  return;
-                }
-                resolve(user);
-              });
-            }),
-            new Promise((resolve) => setTimeout(() => resolve(null), 3000))
-          ]);
-        } catch (e) {
-          console.error('Firebase auth check failed:', e);
-        }
-      }
-      
-      loadUserData();
-      initMap();
+    const carIcon = L.divIcon({
+      html: '<div style="font-size: 24px;">🚖</div>',
+      className: 'dummy-car',
+      iconSize: [30, 30]
     });
-
-    async function loadUserData() {
-      // Fetch user data from server (not localStorage)
-      try {
-        console.log('=== RIDER HOME - Loading user data ===');
-        console.log('Token exists:', !!localStorage.getItem('token'));
-        
-        await Auth.populateFromServer();
-        const user = Auth.currentUser();
-        
-        console.log('User from server:', user);
-        
-        if (user && user.name) {
-          console.log('✅ User loaded successfully:', user.name, user.role);
-          document.getElementById('userName').textContent = user.name;
-          
-          // Load avatar or show initial
-          loadUserAvatar();
-          
-          // Load recent rides only
-          await loadRecentRides();
-        } else {
-          // No user found, redirect to login
-          console.error('❌ No user or no user.name - redirecting to signin');
-          console.error('User object:', user);
-          alert('Session expired or profile incomplete. Please sign in again.');
-          window.location.href = '../common/signin-phone.html';
-        }
-      } catch (error) {
-        console.error('Failed to load user data:', error);
-        alert('Failed to load user data: ' + error.message);
-        window.location.href = '../common/signin-phone.html';
-      }
-    }
-
-    function loadUserAvatar() {
-      const profileBtn = document.getElementById('profileBtn');
-      const user = Auth.currentUser();
-      
-      if (user && user.avatar) {
-        // Check if avatar is already a full path or just the ID
-        const avatarSrc = user.avatar.includes('/') ? user.avatar : `../assets/${user.avatar}.png`;
-        profileBtn.innerHTML = `<img src="${avatarSrc}" alt="Avatar">`;
-      } else if (user && user.name) {
-        profileBtn.textContent = user.name.charAt(0).toUpperCase();
-      }
-    }
-
-    async function loadRecentRides() {
-      try {
-        console.log('Loading recent rides...');
-        
-        const response = await apiFetch('/rides/history?limit=3');
-        
-        console.log('Recent rides response status:', response.status);
-        
-        if (response.ok && response.data) {
-          console.log('Recent rides data:', response.data);
-          if (response.data.rides && response.data.rides.length > 0) {
-            renderRecentRides(response.data.rides);
-          } else {
-            console.log('No rides found in response');
-          }
-        } else {
-          console.error('Failed to load recent rides:', response.data);
-        }
-      } catch (error) {
-        console.error('Error loading recent rides:', error);
-      }
-    }
-
-    function renderRecentRides(rides) {
-      const container = document.getElementById('recentRides');
-      container.innerHTML = rides.map(ride => `
-        <div class="ride-item" onclick="viewRide('${ride.id}')">
-          <div class="ride-icon">🚗</div>
-          <div class="ride-details">
-            <div class="ride-route">${ride.pickup} → ${ride.destination}</div>
-            <div class="ride-meta">${new Date(ride.createdAt).toLocaleDateString()} • ${ride.vehicleType || 'Car'}</div>
-          </div>
-          <div class="ride-fare">₹${ride.fare}</div>
-        </div>
-      `).join('');
-    }
-
-    function locateMe() {
-      if (!currentLocation) {
-        alert('Getting your location...');
-        return;
-      }
-      map.setView([currentLocation.lat, currentLocation.lon], 15, {
-        animate: true,
-        duration: 0.5
-      });
-    }
-
-    function initMap() {
-      map = L.map('map').setView([28.6139, 77.2090], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
-
-      // Add current location marker
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        
-        // Store current location
-        currentLocation = { lat, lon };
-        
-        L.marker([lat, lon], {
-          icon: L.divIcon({
-            html: '<div style="background:#22c55e;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid white;">📍</div>',
-            className: '',
-            iconSize: [30, 30]
-          })
-        }).addTo(map).bindPopup('You are here');
-        
-        map.setView([lat, lon], 13);
-      }, (error) => {
-        console.warn('Location access denied, using default location');
-      });
-    }
-
-    function viewRide(id) {
-      window.location.href = `ride_status.html?rideId=${id}`;
-    }
-
-    async function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        await Auth.logout();
-        window.location.href = '../common/signin.html';
-      }
-    }
-
-    function openNotifications() {
-      document.getElementById('notificationModal').style.display = 'flex';
-      loadNotifications();
-    }
-
-    function closeNotifications() {
-      document.getElementById('notificationModal').style.display = 'none';
-    }
-
-    async function loadNotifications() {
-      // TODO: Fetch notifications from API
-      const mockNotifications = [
-        // { id: 1, title: 'Ride Completed', message: 'Your ride to Downtown was completed successfully', time: '2 hours ago', read: false },
-        // { id: 2, title: 'Payment Received', message: 'Payment of ₹250 received', time: '5 hours ago', read: true },
-      ];
-
-      const container = document.getElementById('notificationList');
-      
-      if (mockNotifications.length === 0) {
-        container.innerHTML = `
-          <div class="notification-empty">
-            <div class="notification-empty-icon">🔔</div>
-            <p>No notifications yet</p>
-            <p style="font-size: 0.9rem; margin-top: 0.5rem;">We'll notify you about ride updates and offers</p>
-          </div>
-        `;
-        document.getElementById('notificationBadge').style.display = 'none';
-      } else {
-        container.innerHTML = mockNotifications.map(notif => `
-          <div class="notification-item ${notif.read ? '' : 'unread'}" onclick="markAsRead(${notif.id})">
-            <div class="notification-title">
-              ${notif.title}
-              ${!notif.read ? '<span style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%;"></span>' : ''}
-            </div>
-            <div>${notif.message}</div>
-            <div class="notification-time">${notif.time}</div>
-          </div>
-        `).join('');
-        
-        const unreadCount = mockNotifications.filter(n => !n.read).length;
-        if (unreadCount > 0) {
-          document.getElementById('notificationBadge').style.display = 'flex';
-          document.getElementById('notificationBadge').textContent = unreadCount;
-        } else {
-          document.getElementById('notificationBadge').style.display = 'none';
-        }
-      }
-    }
-
-    function markAsRead(id) {
-      // TODO: Mark notification as read via API
-      console.log('Mark notification as read:', id);
-    }
-
-    // Close modal on escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const modal = document.getElementById('notificationModal');
-        if (modal.style.display === 'flex') {
-          closeNotifications();
-        }
-      }
-    });
-
-    // Close modal on backdrop click
-    document.getElementById('notificationModal')?.addEventListener('click', (e) => {
-      if (e.target.id === 'notificationModal') {
-        closeNotifications();
-      }
-    });
-
-    // Track Ride Modal Functions
-    let currentRideData = null;
-    let trackingMap = null;
-    let driverMarker = null;
-    let routeLine = null;
-
-    async function openTrackRideModal() {
-      // Simply redirect to ride status page - it will handle showing active ride or "no ride" message
-      window.location.href = 'ride_status.html';
-    }
-
-    function closeTrackRideModal() {
-      document.getElementById('trackRideModal').style.display = 'none';
-      if (trackingMap) {
-        trackingMap.remove();
-        trackingMap = null;
-      }
-    }
-
-    async function loadCurrentRide() {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_CONFIG.BASE_URL}/rides/current`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.status === 404) {
-          // No active ride
-          showNoRideState();
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch current ride');
-        }
-
-        currentRideData = await response.json();
-        showActiveRideState(currentRideData);
-        
-        // Set up real-time updates
-        setupRideTracking(currentRideData._id);
-      } catch (error) {
-        console.error('Error loading current ride:', error);
-        showNoRideState();
-      }
-    }
-
-    function showNoRideState() {
-      const container = document.getElementById('trackRideBody');
-      container.innerHTML = `
-        <div class="no-ride-state">
-          <div class="no-ride-icon">🚗</div>
-          <h3>No Ongoing Ride</h3>
-          <p>You don't have any active rides at the moment</p>
-          <button class="btn-book-ride" onclick="window.location.href='book_ride.html'">
-            Book a Ride
-          </button>
-        </div>
-      `;
-    }
-
-    function showActiveRideState(ride) {
-      const container = document.getElementById('trackRideBody');
-      
-      const statusText = {
-        'requested': 'Looking for driver...',
-        'accepted': 'Driver is on the way',
-        'arrived': 'Driver has arrived',
-        'started': 'Ride in progress',
-        'completed': 'Ride completed'
-      }[ride.status] || ride.status;
-
-      const vehicleEmoji = {
-        'Bike': '🏍️',
-        'Auto': '🛺',
-        'Car': '🚗',
-        'SUV': '🚙',
-        'Carpool': '🚕',
-        'Shuttle': '🚐'
-      }[ride.driver?.vehicle?.type] || '🚗';
-
-      container.innerHTML = `
-        <div class="active-ride-state">
-          <!-- Status -->
-          <div class="ride-detail-card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none;">
-            <div class="ride-detail-label" style="color: rgba(255,255,255,0.8);">Ride Status</div>
-            <div class="ride-detail-value" style="font-size: 1.3rem;">${statusText}</div>
-          </div>
-
-          <!-- Locations -->
-          <div>
-            <div class="location-marker">
-              <div class="marker-icon pickup">📍</div>
-              <div class="marker-text">
-                <div class="marker-label">Pickup Location</div>
-                <div class="marker-address">${ride.pickup.address}</div>
-              </div>
-            </div>
-            <div class="location-marker">
-              <div class="marker-icon drop">🎯</div>
-              <div class="marker-text">
-                <div class="marker-label">Drop Location</div>
-                <div class="marker-address">${ride.dropoff.address}</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Map -->
-          <div class="ride-map-container">
-            <div id="trackingMap" style="width: 100%; height: 100%;"></div>
-          </div>
-
-          ${ride.driver ? `
-          <!-- Driver Info -->
-          <div class="driver-info-card">
-            <div class="driver-avatar">${ride.driver.name.charAt(0).toUpperCase()}</div>
-            <div class="driver-details">
-              <div class="driver-name">${ride.driver.name}</div>
-              <div class="driver-phone">📞 ${ride.driver.phone || 'Not available'}</div>
-              <div class="vehicle-info">
-                <div class="vehicle-badge">${vehicleEmoji} ${ride.driver.vehicle?.type || 'N/A'}</div>
-                <div class="vehicle-badge">${ride.driver.vehicle?.model || 'N/A'}</div>
-                <div class="vehicle-badge">${ride.driver.vehicle?.number || 'N/A'}</div>
-                ${ride.driver.vehicle?.color ? `<div class="vehicle-badge">${ride.driver.vehicle.color}</div>` : ''}
-              </div>
-            </div>
-          </div>
-          ` : ''}
-
-          <!-- Ride Details Grid -->
-          <div class="ride-details-grid">
-            ${ride.otp ? `
-            <div class="otp-card">
-              <div class="otp-label">Your Ride OTP</div>
-              <div class="otp-value">${ride.otp}</div>
-              <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.9;">Share this OTP with your driver</div>
-            </div>
-            ` : ''}
-            
-            <div class="ride-detail-card">
-              <div class="ride-detail-label">Fare Amount</div>
-              <div class="ride-detail-value">₹${ride.fare || 'Calculating...'}</div>
-            </div>
-
-            <div class="ride-detail-card">
-              <div class="ride-detail-label">Distance</div>
-              <div class="ride-detail-value">${ride.distance ? (ride.distance / 1000).toFixed(1) + ' km' : 'Calculating...'}</div>
-            </div>
-
-            <div class="ride-detail-card">
-              <div class="ride-detail-label">Estimated Time</div>
-              <div class="ride-detail-value">${ride.estimatedTime ? Math.round(ride.estimatedTime / 60) + ' min' : 'Calculating...'}</div>
-            </div>
-          </div>
-
-          <!-- Action Buttons -->
-          ${ride.status !== 'completed' && ride.status !== 'cancelled' ? `
-          <div class="ride-action-buttons">
-            <button class="btn-cancel-ride" onclick="cancelCurrentRide()">
-              Cancel Ride
-            </button>
-          </div>
-          ` : ''}
-        </div>
-      `;
-
-      // Initialize map after DOM is ready
-      setTimeout(() => initializeTrackingMap(ride), 100);
-    }
-
-    function initializeTrackingMap(ride) {
-      if (trackingMap) {
-        trackingMap.remove();
-      }
-
-      // Initialize Leaflet map
-      trackingMap = L.map('trackingMap').setView(
-        [ride.pickup.lat, ride.pickup.lng],
-        13
-      );
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(trackingMap);
-
-      // Add pickup marker
-      const pickupIcon = L.divIcon({
-        html: '<div style="font-size: 2rem;">📍</div>',
-        className: 'custom-marker',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
-      });
-      L.marker([ride.pickup.lat, ride.pickup.lng], { icon: pickupIcon })
-        .addTo(trackingMap)
-        .bindPopup('Pickup Location');
-
-      // Add dropoff marker
-      const dropIcon = L.divIcon({
-        html: '<div style="font-size: 2rem;">🎯</div>',
-        className: 'custom-marker',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
-      });
-      L.marker([ride.dropoff.lat, ride.dropoff.lng], { icon: dropIcon })
-        .addTo(trackingMap)
-        .bindPopup('Drop Location');
-
-      // Draw route line using OSRM
-      fetchRouteAndDraw(ride.pickup, ride.dropoff);
-
-      // Add driver marker if location available
-      if (ride.driver && ride.driver.currentLocation) {
-        const vehicleEmoji = {
-          'Bike': '🏍️',
-          'Auto': '🛺',
-          'Car': '🚗',
-          'SUV': '🚙',
-          'Carpool': '🚕',
-          'Shuttle': '🚐'
-        }[ride.driver.vehicle?.type] || '🚗';
-
-        const driverIcon = L.divIcon({
-          html: `<div style="font-size: 2rem;">${vehicleEmoji}</div>`,
-          className: 'custom-marker',
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
-        });
-
-        driverMarker = L.marker(
-          [ride.driver.currentLocation.lat, ride.driver.currentLocation.lng],
-          { icon: driverIcon }
-        ).addTo(trackingMap);
-      }
-
-      // Fit bounds to show all markers
-      const bounds = L.latLngBounds([
-        [ride.pickup.lat, ride.pickup.lng],
-        [ride.dropoff.lat, ride.dropoff.lng]
-      ]);
-      if (ride.driver && ride.driver.currentLocation) {
-        bounds.extend([ride.driver.currentLocation.lat, ride.driver.currentLocation.lng]);
-      }
-      trackingMap.fitBounds(bounds, { padding: [50, 50] });
-    }
-
-    function setupRideTracking(rideId) {
-      // TODO: Set up Socket.IO connection for real-time updates
-      // Listen for driver location updates and ride status changes
-      console.log('Setting up ride tracking for ride:', rideId);
-    }
-
-    async function cancelCurrentRide() {
-      if (!currentRideData) return;
-
-      if (!confirm('Are you sure you want to cancel this ride?')) {
-        return;
-      }
-
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_CONFIG.BASE_URL}/rides/${currentRideData._id}/cancel`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to cancel ride');
-        }
-
-        alert('Ride cancelled successfully');
-        closeTrackRideModal();
-      } catch (error) {
-        console.error('Error cancelling ride:', error);
-        alert('Failed to cancel ride. Please try again.');
-      }
-    }
-
-    // Close track ride modal on escape key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const modal = document.getElementById('trackRideModal');
-        if (modal && modal.style.display === 'flex') {
-          closeTrackRideModal();
-        }
-      }
-    });
-
-    // Close track ride modal on backdrop click
-    document.getElementById('trackRideModal')?.addEventListener('click', (e) => {
-      if (e.target.id === 'trackRideModal') {
-        closeTrackRideModal();
-      }
-    });
+    L.marker([17.3950, 78.4967], { icon: carIcon }).addTo(map);
+    L.marker([17.3750, 78.4767], { icon: carIcon }).addTo(map);
   </script>
 </body>
+
 </html>

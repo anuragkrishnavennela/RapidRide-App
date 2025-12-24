@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api import fare, eta, geo
+from app.api import fare, eta, geo, tasks
 from app.schemas.response import HealthResponse
 from app.services.eta_service import is_model_loaded
 from app.utils.rmq import check_rabbitmq_connection
@@ -43,6 +43,7 @@ app.add_middleware(
 app.include_router(fare.router)
 app.include_router(eta.router)
 app.include_router(geo.router)
+app.include_router(tasks.router)
 
 
 @app.get("/", tags=["Root"])
