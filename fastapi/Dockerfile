@@ -23,6 +23,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY ./app /app/app
 COPY ./data /app/data
+COPY ./start.sh /app/start.sh
+
+# Make startup script executable
+RUN chmod +x /app/start.sh
 
 # Create directory for models
 RUN mkdir -p /app/app/models
@@ -30,13 +34,5 @@ RUN mkdir -p /app/app/models
 # Expose port
 EXPOSE 8001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8001/health')"
-
-# Generate the model
-# Generate the model
-# RUN python generate_training_data.py
-
-# Run the application
-CMD python -c "import os; os.system(f'uvicorn app.main:app --host 0.0.0.0 --port {os.getenv(\"PORT\", \"8001\")}')"
+# Run the application using startup script
+CMD ["/bin/bash", "/app/start.sh"]
