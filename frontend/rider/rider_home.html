@@ -296,7 +296,7 @@
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script src="../common/js/rider.js"></script>
   <script>
-    const map = L.map('map', { zoomControl: false }).setView([17.3850, 78.4867], 13);
+    const map = L.map('map', { zoomControl: false }).setView([17.3850, 78.4867], 17);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
@@ -309,7 +309,7 @@
           console.log('✅ Location detected:', latitude, longitude);
 
           // Center map on user's location
-          map.setView([latitude, longitude], 14);
+          map.setView([latitude, longitude], 17);
 
           // Add marker for user's location
           const userIcon = L.divIcon({
