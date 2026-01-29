@@ -301,6 +301,40 @@
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log('✅ Location detected:', latitude, longitude);
+
+          // Center map on user's location
+          map.setView([latitude, longitude], 14);
+
+          // Add marker for user's location
+          const userIcon = L.divIcon({
+            html: '<div style="font-size: 28px;">📍</div>',
+            className: 'user-location',
+            iconSize: [30, 30]
+          });
+          L.marker([latitude, longitude], { icon: userIcon }).addTo(map)
+            .bindPopup('You are here')
+            .openPopup();
+        },
+        (error) => {
+          console.warn('⚠️ Location access denied or unavailable:', error.message);
+          // Keep default location if permission denied
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        }
+      );
+    } else {
+      console.warn('⚠️ Geolocation not supported');
+    }
+
     const carIcon = L.divIcon({
       html: '<div style="font-size: 24px;">🚖</div>',
       className: 'dummy-car',
