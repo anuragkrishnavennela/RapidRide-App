@@ -11,10 +11,10 @@ let isProcessing = false;
 // Get user location with retry
 async function getUserLocation(retries = 3) {
   if (userLocation) return userLocation;
-  
+
   return new Promise((resolve) => {
     let attempts = 0;
-    
+
     const tryGetLocation = () => {
       if (!navigator.geolocation) {
         console.warn('⚠️ Geolocation not supported');
@@ -25,10 +25,10 @@ async function getUserLocation(retries = 3) {
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          userLocation = { 
-            lat: pos.coords.latitude, 
+          userLocation = {
+            lat: pos.coords.latitude,
             lon: pos.coords.longitude,
-            accuracy: pos.coords.accuracy 
+            accuracy: pos.coords.accuracy
           };
           console.log('📍 Location obtained:', userLocation);
           // Cache location
@@ -41,7 +41,7 @@ async function getUserLocation(retries = 3) {
         (error) => {
           attempts++;
           console.warn(`⚠️ Location attempt ${attempts} failed:`, error.message);
-          
+
           if (attempts < retries) {
             setTimeout(tryGetLocation, 1000);
           } else {
@@ -58,22 +58,22 @@ async function getUserLocation(retries = 3) {
                   return;
                 }
               }
-            } catch (e) {}
-            
+            } catch (e) { }
+
             // Fallback to Delhi
             userLocation = { lat: 28.6139, lon: 77.2090 };
             console.log('📍 Using default location (Delhi)');
             resolve(userLocation);
           }
         },
-        { 
-          enableHighAccuracy: true, 
-          timeout: 10000, 
-          maximumAge: 300000 
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
         }
       );
     };
-    
+
     tryGetLocation();
   });
 }
@@ -83,10 +83,10 @@ function getDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
@@ -104,18 +104,18 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 8000);
-      
+
       const response = await fetch(url, {
         ...options,
         signal: controller.signal
       });
-      
+
       clearTimeout(timeout);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (err) {
       console.warn(`Fetch attempt ${i + 1} failed:`, err.message);
@@ -184,7 +184,7 @@ function initLocationAutocomplete(inputId, callback) {
       // Save to backend database
       const API_BASE = document.querySelector('meta[name="api-base"]')?.content || 'https://us-central1-rapidrideonline.cloudfunctions.net/api';
       const token = localStorage.getItem('token') || localStorage.getItem('rr_token');
-      
+
       if (token) {
         const response = await fetch(`${API_BASE}/auth/places`, {
           method: 'POST',
@@ -207,7 +207,7 @@ function initLocationAutocomplete(inputId, callback) {
           // Fallback to localStorage if backend fails
           const saved = JSON.parse(localStorage.getItem('rr_saved_places') || '[]');
           // Check if already exists locally
-          const exists = saved.some(p => 
+          const exists = saved.some(p =>
             Math.abs(p.lat - placeData.lat) < 0.0001 && Math.abs(p.lon - placeData.lon) < 0.0001
           );
           if (!exists) {
@@ -239,7 +239,7 @@ function initLocationAutocomplete(inputId, callback) {
       // Remove from backend database
       const API_BASE = document.querySelector('meta[name="api-base"]')?.content || 'https://us-central1-rapidrideonline.cloudfunctions.net/api';
       const token = localStorage.getItem('token') || localStorage.getItem('rr_token');
-      
+
       if (token) {
         const response = await fetch(`${API_BASE}/auth/places`, {
           method: 'DELETE',
@@ -299,10 +299,10 @@ function initLocationAutocomplete(inputId, callback) {
       let icon = '📍';
       let badge = '';
       let actionBtn = '';
-      
+
       // Check if this place is already saved
       const isSaved = checkIfSaved(item);
-      
+
       if (item.saved || isSaved) {
         icon = item.icon || '⭐';
         // Show filled star for saved places
@@ -357,9 +357,9 @@ function initLocationAutocomplete(inputId, callback) {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            
+
             const isSaved = btn.dataset.saved === 'true';
-            
+
             if (isSaved) {
               console.log('⭐ Unsaving place:', item.name);
               await unsavePlace(item);
@@ -386,7 +386,7 @@ function initLocationAutocomplete(inputId, callback) {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            
+
             console.log('🗑️ Removing recent search:', item.name);
             removeRecentSearch(item);
           };
@@ -395,10 +395,10 @@ function initLocationAutocomplete(inputId, callback) {
 
       div.onclick = (e) => {
         // Only select item if clicking on the main div, not buttons
-        if (!e.target.classList.contains('save-place-btn') && 
-            !e.target.classList.contains('remove-recent-btn') &&
-            !e.target.closest('.save-place-btn') &&
-            !e.target.closest('.remove-recent-btn')) {
+        if (!e.target.classList.contains('save-place-btn') &&
+          !e.target.classList.contains('remove-recent-btn') &&
+          !e.target.closest('.save-place-btn') &&
+          !e.target.closest('.remove-recent-btn')) {
           e.preventDefault();
           e.stopPropagation();
           selectItem(item);
@@ -423,7 +423,7 @@ function initLocationAutocomplete(inputId, callback) {
       const recent = JSON.parse(localStorage.getItem('rr_recent_searches') || '[]');
       const filtered = recent.filter(r => r.name !== item.name);
       localStorage.setItem('rr_recent_searches', JSON.stringify(filtered));
-      
+
       // Refresh the dropdown with current search
       const currentQuery = input.value;
       search(currentQuery);
@@ -437,7 +437,7 @@ function initLocationAutocomplete(inputId, callback) {
     input.dataset.lat = item.lat;
     input.dataset.lon = item.lon;
     dropdown.style.display = 'none';
-    
+
     // Save to recent searches
     try {
       const recent = JSON.parse(localStorage.getItem('rr_recent_searches') || '[]');
@@ -449,7 +449,7 @@ function initLocationAutocomplete(inputId, callback) {
     } catch (e) {
       console.warn('Could not save to recent:', e);
     }
-    
+
     if (callback) callback({ name: item.name, lat: item.lat, lon: item.lon });
   }
 
@@ -462,7 +462,7 @@ function initLocationAutocomplete(inputId, callback) {
     if (!query || query.length < 2) {
       // Show nearby + popular
       const items = [];
-      
+
       // Saved places from new storage
       try {
         const savedPlaces = JSON.parse(localStorage.getItem('rr_saved_places') || '[]');
@@ -472,7 +472,7 @@ function initLocationAutocomplete(inputId, callback) {
       } catch (e) {
         console.warn('Could not load saved places:', e);
       }
-      
+
       // Legacy saved places (Home/Work)
       try {
         const home = localStorage.getItem('rr_home_address');
@@ -495,7 +495,7 @@ function initLocationAutocomplete(inputId, callback) {
         recent.slice(0, 3).forEach(r => {
           items.push({ ...r, recent: true, icon: '🕒' });
         });
-      } catch (e) {}
+      } catch (e) { }
 
       // Popular with distance
       const pop = POPULAR.map(p => ({
@@ -522,7 +522,7 @@ function initLocationAutocomplete(inputId, callback) {
     }
 
     // Filter popular places for instant feedback
-    const popularMatches = POPULAR.filter(p => 
+    const popularMatches = POPULAR.filter(p =>
       p.name.toLowerCase().includes(query.toLowerCase()) ||
       p.city.toLowerCase().includes(query.toLowerCase())
     ).map(p => ({
@@ -539,7 +539,7 @@ function initLocationAutocomplete(inputId, callback) {
     // Search both APIs with fallback
     try {
       let searchResults = [];
-      
+
       // Try Photon first (faster)
       try {
         let url = `${PHOTON_API}?q=${encodeURIComponent(query)}&limit=12&lang=en`;
@@ -548,15 +548,29 @@ function initLocationAutocomplete(inputId, callback) {
         }
 
         const photonData = await fetchWithRetry(url);
-        
+
         searchResults = photonData.features.map(f => {
           const p = f.properties;
           const coords = f.geometry.coordinates;
           const dist = userLocation ? getDistance(userLocation.lat, userLocation.lon, coords[1], coords[0]) : 0;
-          
+
+          // Better name selection - prioritize actual place names
+          let name = p.name;
+          if (!name || name.length < 2) {
+            // Fallback hierarchy: street > district > city > state
+            name = p.street || p.district || p.suburb || p.city || p.state || 'Place';
+          }
+
+          // Better address formatting - remove redundant info
+          const addressParts = [];
+          if (p.street && p.street !== name) addressParts.push(p.street);
+          if (p.district && p.district !== name) addressParts.push(p.district);
+          if (p.city && p.city !== name) addressParts.push(p.city);
+          if (p.state) addressParts.push(p.state);
+
           return {
-            name: p.name || p.street || p.city || 'Place',
-            address: [p.street, p.city, p.state, p.country].filter(Boolean).join(', '),
+            name: name,
+            address: addressParts.slice(0, 3).join(', '), // Max 3 parts
             lat: coords[1],
             lon: coords[0],
             distance: dist,
@@ -565,14 +579,14 @@ function initLocationAutocomplete(inputId, callback) {
         });
       } catch (photonErr) {
         console.warn('Photon API failed, trying Nominatim:', photonErr.message);
-        
+
         // Fallback to Nominatim
         try {
           const nominatimUrl = `${NOMINATIM_API}?q=${encodeURIComponent(query)}&format=json&limit=10&addressdetails=1`;
           const nominatimData = await fetchWithRetry(nominatimUrl, {
             headers: { 'User-Agent': 'RapidRide/1.0' }
           });
-          
+
           searchResults = nominatimData.map(item => {
             const dist = userLocation ? getDistance(userLocation.lat, userLocation.lon, parseFloat(item.lat), parseFloat(item.lon)) : 0;
             return {
@@ -596,24 +610,53 @@ function initLocationAutocomplete(inputId, callback) {
       }
 
       // Combine and deduplicate
-      const combined = [...popularMatches, ...searchResults]
-        .filter((item, index, self) => 
-          index === self.findIndex(t => 
-            Math.abs(t.lat - item.lat) < 0.001 && 
+      let combined = [...popularMatches, ...searchResults]
+        .filter((item, index, self) =>
+          index === self.findIndex(t =>
+            Math.abs(t.lat - item.lat) < 0.001 &&
             Math.abs(t.lon - item.lon) < 0.001
           )
-        )
+        );
+
+      // FILTER: Only show results within 30km of current location
+      if (userLocation) {
+        combined = combined.filter(item => {
+          const distance = getDistance(userLocation.lat, userLocation.lon, item.lat, item.lon);
+          item.distance = distance; // Update distance
+          return distance <= 30; // Within 30km
+        });
+      }
+
+      // QUALITY FILTER: Remove gibberish and low-quality results
+      combined = combined.filter(item => {
+        const name = item.name.toLowerCase();
+
+        // Remove results with only numbers or very short names
+        if (name.length < 3) return false;
+        if (/^[\d\s]+$/.test(name)) return false; // Only digits
+
+        // Remove results with too many special characters
+        const specialCharRatio = (name.match(/[^\w\s]/g) || []).length / name.length;
+        if (specialCharRatio > 0.3) return false;
+
+        // Keep if it has proper words
+        return true;
+      });
+
+      // Sort by distance and quality
+      combined = combined
         .sort((a, b) => {
-          // Prioritize popular, then by distance
+          // Prioritize popular places
           if (a.popular && !b.popular) return -1;
           if (!a.popular && b.popular) return 1;
+          // Then by distance
           return a.distance - b.distance;
         })
         .slice(0, 10);
 
       // Cache results
       locationCache.set(cacheKey, combined);
-      
+
       // Limit cache size
       if (locationCache.size > 50) {
         const firstKey = locationCache.keys().next().value;
