@@ -223,10 +223,79 @@
       attribution: '&copy; OpenStreetMap &copy; CARTO'
     }).addTo(map);
 
-    // Store locations
+    // Store locations and map elements
     let pickupLocation = null;
     let dropLocation = null;
     let fareEstimates = {};
+    let pickupMarker = null;
+    let dropMarker = null;
+    let routingControl = null;
+
+    // Update map with markers and route
+    function updateMap() {
+      // Clear existing markers
+      if (pickupMarker) map.removeLayer(pickupMarker);
+      if (dropMarker) map.removeLayer(dropMarker);
+      if (routingControl) map.removeControl(routingControl);
+
+      // Add pickup marker
+      if (pickupLocation) {
+        const pickupIcon = L.divIcon({
+          html: '<div style="background: #10b981; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">📍</div>',
+          className: '',
+          iconSize: [32, 32]
+        });
+        pickupMarker = L.marker([pickupLocation.lat, pickupLocation.lng], { icon: pickupIcon })
+          .addTo(map)
+          .bindPopup(`<b>Pickup:</b><br>${pickupLocation.address}`);
+      }
+
+      // Add drop marker
+      if (dropLocation) {
+        const dropIcon = L.divIcon({
+          html: '<div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">🎯</div>',
+          className: '',
+          iconSize: [32, 32]
+        });
+        dropMarker = L.marker([dropLocation.lat, dropLocation.lng], { icon: dropIcon })
+          .addTo(map)
+          .bindPopup(`<b>Drop:</b><br>${dropLocation.address}`);
+      }
+
+      // Draw route if both locations are set
+      if (pickupLocation && dropLocation) {
+        routingControl = L.Routing.control({
+          waypoints: [
+            L.latLng(pickupLocation.lat, pickupLocation.lng),
+            L.latLng(dropLocation.lat, dropLocation.lng)
+          ],
+          routeWhileDragging: false,
+          show: false,
+          addWaypoints: false,
+          lineOptions: {
+            styles: [{
+              color: '#6366f1',
+              opacity: 0.8,
+              weight: 6
+            }]
+          },
+          createMarker: function () { return null; } // Don't create default markers
+        }).addTo(map);
+
+        // Fit map to show both markers
+        const bounds = L.latLngBounds([
+          [pickupLocation.lat, pickupLocation.lng],
+          [dropLocation.lat, dropLocation.lng]
+        ]);
+        map.fitBounds(bounds, { padding: [50, 50] });
+      } else if (pickupLocation) {
+        // Only pickup set, center on it
+        map.setView([pickupLocation.lat, pickupLocation.lng], 14);
+      } else if (dropLocation) {
+        // Only drop set, center on it
+        map.setView([dropLocation.lat, dropLocation.lng], 14);
+      }
+    }
 
     const VEHICLES = [
       { type: 'bike', name: 'Rapid Bike', icon: '🏍️' },
@@ -443,6 +512,9 @@
 
           console.log('✅ Current location set:', addressName);
 
+          // Update map
+          updateMap();
+
           // If drop is also set, fetch estimate
           if (dropLocation) {
             showVehicles(0);
@@ -508,6 +580,9 @@
         address: location.name
       };
 
+      // Update map
+      updateMap();
+
       // If drop is also set, fetch estimate
       if (dropLocation) {
         showVehicles(0);
@@ -521,6 +596,9 @@
         lng: location.lon,
         address: location.name
       };
+
+      // Update map
+      updateMap();
 
       // If pickup is also set, fetch estimate
       if (pickupLocation) {
