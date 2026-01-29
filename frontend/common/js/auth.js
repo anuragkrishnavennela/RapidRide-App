@@ -17,7 +17,7 @@
     // Return cached user if available (will be populated by populateFromServer)
     return _userCache;
   }
-  
+
   function setCurrent(u) {
     _userCache = u;
     notifyChange();
@@ -29,7 +29,7 @@
 
   // Ensure a basic appConfig and apiFetch exist so pages don't need to include extra scripts
   function readMeta(name) { var el = document.querySelector('meta[name="' + name + '"]'); return el ? el.getAttribute('content') : null; }
-  
+
   // Use API_CONFIG if available, otherwise fallback to meta tag or production URL
   function getDefaultApiBase() {
     if (window.API_CONFIG && window.API_CONFIG.BASE_URL) {
@@ -37,7 +37,7 @@
     }
     return readMeta('api-base') || 'https://us-central1-rapidrideonline.cloudfunctions.net/api';
   }
-  
+
   var defaultApiBase = getDefaultApiBase();
   if (!window.appConfig) window.appConfig = { apiBase: defaultApiBase, setApiBase: function (b) { this.apiBase = b; } };
 
@@ -53,7 +53,7 @@
         options.headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(options.body);
       }
-      
+
       // Get fresh Firebase ID token
       var token = null;
       try {
@@ -68,7 +68,12 @@
       } catch (err) {
         console.error('Failed to get Firebase token:', err);
       }
-      
+
+      // Fallback: If no live Firebase user (e.g., page load), use stored token
+      if (!token) {
+        token = localStorage.getItem('token') || localStorage.getItem('firebaseToken');
+      }
+
       if (token) options.headers['Authorization'] = 'Bearer ' + token;
 
       var res = await fetch(url, options).catch(err => { throw err; });
@@ -148,15 +153,15 @@
       }
       try {
         var r = await window.apiFetch('/auth/me', { method: 'GET' });
-        if (r.ok && r.data && r.data.user) { 
-          setCurrent(r.data.user); 
-          return r.data.user; 
+        if (r.ok && r.data && r.data.user) {
+          setCurrent(r.data.user);
+          return r.data.user;
         } else {
           // Token invalid or user not found
           setCurrent(null);
           return null;
         }
-      } catch (e) { 
+      } catch (e) {
         console.warn('Failed to fetch user from server:', e);
         setCurrent(null);
         return null;
@@ -164,32 +169,32 @@
     },
 
     // Security Question Helpers
-    getSecurityQuestion: async function(email) {
+    getSecurityQuestion: async function (email) {
       try {
         var res = await window.apiFetch('/auth/security-question/' + encodeURIComponent(email));
         return res.ok ? { success: true, question: res.data.question } : { success: false, message: res.data.message };
-      } catch(e) { return { success: false, message: 'Network error' }; }
+      } catch (e) { return { success: false, message: 'Network error' }; }
     },
 
-    verifyAnswer: async function(email, answer) {
+    verifyAnswer: async function (email, answer) {
       try {
         var res = await window.apiFetch('/auth/verify-answer', { method: 'POST', body: { email: email, answer: answer } });
         return res.ok ? { success: true } : { success: false, message: res.data.message };
-      } catch(e) { return { success: false, message: 'Network error' }; }
+      } catch (e) { return { success: false, message: 'Network error' }; }
     },
 
-    resetPassword: async function(email, answer, newPassword) {
+    resetPassword: async function (email, answer, newPassword) {
       try {
         var res = await window.apiFetch('/auth/reset-password', { method: 'POST', body: { email: email, answer: answer, newPassword: newPassword } });
         return res.ok ? { success: true } : { success: false, message: res.data.message };
-      } catch(e) { return { success: false, message: 'Network error' }; }
+      } catch (e) { return { success: false, message: 'Network error' }; }
     },
 
-    changePassword: async function(newPassword) {
+    changePassword: async function (newPassword) {
       try {
         var res = await window.apiFetch('/auth/change-password', { method: 'POST', body: { newPassword: newPassword } });
         return res.ok ? { success: true } : { success: false, message: res.data.message };
-      } catch(e) { return { success: false, message: 'Network error' }; }
+      } catch (e) { return { success: false, message: 'Network error' }; }
     },
 
     logout: async function () {
