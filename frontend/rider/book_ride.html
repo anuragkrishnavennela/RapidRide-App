@@ -389,11 +389,39 @@
       }
     }
 
+    // Initialize location autocomplete
+    console.log('🚀 Initializing autocomplete...');
+
+    initLocationAutocomplete('pickupInput', (location) => {
+      console.log('✅ Pickup selected:', location);
+      pickupLocation = {
+        lat: location.lat,
+        lng: location.lon,
+        address: location.name
+      };
+
+      // If drop is also set, fetch estimate
+      if (dropLocation) {
+        showVehicles(0);
+      }
+    });
+
+    initLocationAutocomplete('dropInput', (location) => {
+      console.log('✅ Drop selected:', location);
+      dropLocation = {
+        lat: location.lat,
+        lng: location.lon,
+        address: location.name
+      };
+
+      // If pickup is also set, fetch estimate
+      if (pickupLocation) {
+        showVehicles(0);
+      }
+    });
+
     // Auto-focus pickup
     document.getElementById('pickupInput').focus();
-  </script>
-  // Auto-focus pickup
-  document.getElementById('pickupInput').focus();
   </script>
 </body>
 
