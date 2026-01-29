@@ -786,6 +786,64 @@ router.post('/link-phone', authenticateToken, async (req, res) => {
 
 const bcrypt = require('bcryptjs');
 
+// Setup Admin User (One-time secure setup)
+router.post('/setup-admin', async (req, res) => {
+  try {
+    const { name, email, phone, role } = req.body;
+    const ALLOWED_ADMIN_PHONE = '+919705637783';
+
+    // Strict validation
+    if (phone !== ALLOWED_ADMIN_PHONE) {
+      return res.status(403).json({ message: 'Unauthorized: Only specific phone number allowed for admin' });
+    }
+
+    if (role !== 'admin') {
+      return res.status(400).json({ message: 'Role must be admin' });
+    }
+
+    // Check if user exists by phone
+    let user = await User.findOne({ phone });
+
+    if (user) {
+      // Update existing user to admin
+      user.name = name;
+      user.email = email;
+      user.role = 'admin';
+      user.phoneVerified = true;
+      user.createdAt = user.createdAt || new Date(); // Fix if missing
+      await user.save();
+      console.log('✅ Updated existing user to Admin:', user.phone);
+    } else {
+      // Create new admin user
+      user = new User({
+        name,
+        email,
+        phone,
+        role: 'admin',
+        phoneVerified: true,
+        emailVerified: true,
+        firebaseUid: `admin-${Date.now()}` // Temporary UID until they login
+      });
+      await user.save();
+      console.log('✅ Created new Admin user:', user.phone);
+    }
+
+    res.json({
+      success: true,
+      message: 'Admin user configured successfully',
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        phone: user.phone
+      }
+    });
+  } catch (error) {
+    console.error('Setup admin error:', error);
+    res.status(500).json({ message: 'Server error: ' + error.message });
+  }
+});
+
 // Backend Sign Up (creates user in MongoDB)
 router.post('/signup', async (req, res) => {
   try {

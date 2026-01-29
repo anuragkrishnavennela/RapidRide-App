@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Admin User - RapidRide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+            font-size: 1.75rem;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .info-box {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        .result.error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .warning {
+            background: #fffbeb;
+            border: 1px solid #fbbf24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            color: #92400e;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔐 Setup Admin User</h1>
+        <p class="subtitle">One-time setup to create admin access in MongoDB</p>
+
+        <div class="info-box">
+            <strong>Admin Phone Number:</strong>
+            <code>+91 9705637783</code>
+        </div>
+
+        <div class="warning">
+            ⚠️ <strong>Important:</strong> Use this page only once to set up the admin user. Delete this file after
+            successful setup.
+        </div>
+
+        <form id="setupForm">
+            <div class="form-group">
+                <label for="backendUrl">Backend URL</label>
+                <input type="text" id="backendUrl" placeholder="https://rapidride-app-production-1806.up.railway.app"
+                    value="https://rapidride-app-production-1806.up.railway.app" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminName">Admin Name</label>
+                <input type="text" id="adminName" placeholder="Anurag Krishna" value="Anurag Krishna" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adminEmail">Admin Email</label>
+                <input type="email" id="adminEmail" placeholder="admin@rapidride.com" value="admin@rapidride.com"
+                    required>
+            </div>
+
+            <button type="submit" id="submitBtn">Create Admin User</button>
+        </form>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('setupForm');
+        const resultDiv = document.getElementById('result');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const backendUrl = document.getElementById('backendUrl').value.trim();
+            const adminName = document.getElementById('adminName').value.trim();
+            const adminEmail = document.getElementById('adminEmail').value.trim();
+            const adminPhone = '+919705637783'; // Hardcoded admin phone
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+            resultDiv.style.display = 'none';
+
+            try {
+                // Create user in MongoDB via backend API
+                const response = await fetch(`${backendUrl}/api/auth/setup-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: adminName,
+                        email: adminEmail,
+                        phone: adminPhone,
+                        role: 'admin'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+            <strong>✅ Success!</strong><br>
+            Admin user created successfully.<br>
+            <br>
+            <strong>Details:</strong><br>
+            Name: ${adminName}<br>
+            Email: ${adminEmail}<br>
+            Phone: ${adminPhone}<br>
+            Role: Admin<br>
+            <br>
+            <strong>Next Steps:</strong><br>
+            1. Delete this HTML file (setup-admin.html)<br>
+            2. Go to <a href="frontend/admin/admin_login.html" style="color: #667eea;">Admin Login</a><br>
+            3. Login with phone number: <code>9705637783</code>
+          `;
+                    resultDiv.style.display = 'block';
+                    submitBtn.textContent = '✓ Admin Created';
+                } else {
+                    throw new Error(data.message || 'Failed to create admin user');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+          <strong>❌ Error</strong><br>
+          ${error.message}<br>
+          <br>
+          <strong>Troubleshooting:</strong><br>
+          • Make sure the backend URL is correct<br>
+          • Check if the backend is running<br>
+          • Verify MongoDB connection<br>
+          • Check backend logs for details
+        `;
+                resultDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Try Again';
+            }
+        });
+    </script>
+</body>
+
+</html>
