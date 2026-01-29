@@ -3,13 +3,29 @@ const router = express.Router();
 const admin = require('firebase-admin');
 
 // Firebase Auth middleware
+const User = require('../models/user');
+
+// Firebase Auth middleware with DB User Fetch
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) return res.status(401).json({ message: 'No token provided' });
     const token = authHeader.split(' ')[1];
+
+    // 1. Verify Firebase Token
     const decodedToken = await admin.auth().verifyIdToken(token);
-    req.user = decodedToken;
+
+    // 2. Fetch User from DB (to get role)
+    const user = await User.findOne({
+      $or: [{ firebaseUid: decodedToken.uid }, { email: decodedToken.email }]
+    });
+
+    if (user) {
+      req.user = { ...decodedToken, ...user.toObject(), id: user._id.toString() };
+    } else {
+      req.user = decodedToken; // Fallback (role will be missing)
+    }
+
     req.firebaseUser = decodedToken;
     next();
   } catch (err) {
@@ -44,10 +60,10 @@ setInterval(cleanOldChats, 24 * 60 * 60 * 1000);
 router.post('/chats/create', authMiddleware, (req, res) => {
   try {
     const { message, userType } = req.body; // userType: 'rider' or 'captain'
-    
+
     const chatId = Date.now().toString();
     const ticketNumber = generateTicketNumber();
-    
+
     const newChat = {
       chatId,
       ticketNumber,
@@ -68,9 +84,9 @@ router.post('/chats/create', authMiddleware, (req, res) => {
         }
       ]
     };
-    
+
     supportChats.set(chatId, newChat);
-    
+
     res.json({
       success: true,
       chat: {
@@ -90,7 +106,7 @@ router.post('/chats/create', authMiddleware, (req, res) => {
 router.get('/chats', authMiddleware, (req, res) => {
   try {
     const userId = req.user.uid || req.user.id;
-    
+
     const userChats = Array.from(supportChats.values())
       .filter(chat => chat.userId === userId)
       .map(chat => ({
@@ -103,7 +119,7 @@ router.get('/chats', authMiddleware, (req, res) => {
         unreadCount: chat.messages.filter(m => !m.read && m.senderType === 'admin').length
       }))
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    
+
     res.json({ success: true, chats: userChats });
   } catch (error) {
     console.error('Get chats error:', error);
@@ -116,25 +132,25 @@ router.get('/chats/:chatId', authMiddleware, (req, res) => {
   try {
     const { chatId } = req.params;
     const userId = req.user.uid || req.user.id;
-    
+
     const chat = supportChats.get(chatId);
-    
+
     if (!chat) {
       return res.status(404).json({ message: 'Chat not found' });
     }
-    
+
     // Verify user owns this chat or is admin
     if (chat.userId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
     }
-    
+
     // Mark messages as read
     chat.messages.forEach(msg => {
       if (msg.senderType === 'admin') {
         msg.read = true;
       }
     });
-    
+
     res.json({ success: true, chat });
   } catch (error) {
     console.error('Get chat details error:', error);
@@ -148,24 +164,24 @@ router.post('/chats/:chatId/messages', authMiddleware, (req, res) => {
     const { chatId } = req.params;
     const { message } = req.body;
     const userId = req.user.uid || req.user.id;
-    
+
     const chat = supportChats.get(chatId);
-    
+
     if (!chat) {
       return res.status(404).json({ message: 'Chat not found' });
     }
-    
+
     // Check if chat is ended
     if (chat.status === 'ended') {
       return res.status(400).json({ message: 'Cannot send messages to ended chats' });
     }
-    
+
     // Verify user owns this chat or is admin
     const isAdmin = req.user.role === 'admin';
     if (chat.userId !== userId && !isAdmin) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
-    
+
     const newMessage = {
       messageId: `${chatId}_${chat.messages.length + 1}`,
       senderId: userId,
@@ -174,10 +190,10 @@ router.post('/chats/:chatId/messages', authMiddleware, (req, res) => {
       timestamp: new Date().toISOString(),
       read: false
     };
-    
+
     chat.messages.push(newMessage);
     chat.updatedAt = new Date().toISOString();
-    
+
     res.json({
       success: true,
       message: newMessage
@@ -193,21 +209,21 @@ router.post('/chats/:chatId/end', authMiddleware, (req, res) => {
   try {
     const { chatId } = req.params;
     const userId = req.user.uid || req.user.id;
-    
+
     const chat = supportChats.get(chatId);
-    
+
     if (!chat) {
       return res.status(404).json({ message: 'Chat not found' });
     }
-    
+
     // Verify user owns this chat or is admin
     if (chat.userId !== userId && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Unauthorized' });
     }
-    
+
     chat.status = 'ended';
     chat.updatedAt = new Date().toISOString();
-    
+
     res.json({
       success: true,
       message: 'Chat ended successfully'
@@ -224,21 +240,21 @@ router.get('/admin/chats', authMiddleware, (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Admin access required' });
     }
-    
+
     const { status, userType } = req.query;
-    
+
     let chats = Array.from(supportChats.values());
-    
+
     // Filter by status
     if (status) {
       chats = chats.filter(chat => chat.status === status);
     }
-    
+
     // Filter by userType
     if (userType) {
       chats = chats.filter(chat => chat.userType === userType);
     }
-    
+
     const formattedChats = chats
       .map(chat => ({
         chatId: chat.chatId,
@@ -253,7 +269,7 @@ router.get('/admin/chats', authMiddleware, (req, res) => {
         messageCount: chat.messages.length
       }))
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-    
+
     res.json({ success: true, chats: formattedChats });
   } catch (error) {
     console.error('Admin get chats error:', error);
