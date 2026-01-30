@@ -734,7 +734,7 @@
         if (user.role !== 'admin') {
           console.error('User role is not admin:', user.role);
           alert('Access denied. Admin privileges required.');
-          window.location.href = user.role === 'captain' ? '../driver/driver_home.html' : '../rider/rider_home.html';
+          window.location.href = user.role === 'captain' ? '../driver/driver_home.html' : '../rider/home.html';
           return;
         }
 

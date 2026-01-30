@@ -1284,7 +1284,7 @@
           break;
         case 'completed':
           console.log('Ride already completed, redirecting immediately');
-          window.location.href = 'rider_home.html';
+          window.location.href = 'home.html';
           break;
         case 'cancelled':
           showToast('Ride Cancelled', 'This ride has been cancelled. Redirecting to book ride...', 'error');
@@ -1713,7 +1713,7 @@
     }
 
     function goBack() {
-      window.location.href = 'rider_home.html';
+      window.location.href = 'home.html';
     }
 
     // Toast notification functions
@@ -1825,7 +1825,7 @@
           closeRatingModal();
           showToast('Thank You!', 'Your rating has been submitted successfully', 'success');
           setTimeout(() => {
-            window.location.href = 'rider_home.html';
+            window.location.href = 'home.html';
           }, 2000);
         } else {
           showToast('Error', response.data?.message || 'Failed to submit rating', 'error');
@@ -1844,7 +1844,7 @@
       closeRatingModal();
       showToast('Skipped', 'You can rate this ride later from your ride history', 'info');
       setTimeout(() => {
-        window.location.href = 'rider_home.html';
+        window.location.href = 'home.html';
       }, 2000);
     }
 

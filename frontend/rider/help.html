@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,7 +56,8 @@
       font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
-      margin-left: -40px; /* Center text accounting for back button */
+      margin-left: -40px;
+      /* Center text accounting for back button */
     }
 
     .help-container {
@@ -273,8 +275,15 @@
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
     }
 
     .chat-close {
@@ -515,6 +524,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Chat List Modal -->
   <div class="chat-modal" id="chatListModal">
@@ -522,7 +532,8 @@
       <div class="chat-header">
         <h3>📋 Previous Chats</h3>
         <div class="chat-close" onclick="closeChatListModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -543,8 +554,10 @@
     <div class="chat-modal-content">
       <div class="chat-header">
         <div style="display: flex; align-items: center; gap: 0.75rem;">
-          <button onclick="closeChatModal(); openChatListModal();" style="padding: 0.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button onclick="closeChatModal(); openChatListModal();"
+            style="padding: 0.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
@@ -557,15 +570,19 @@
                 Online
               </span>
             </h3>
-            <p id="chatTicketNumber" style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></p>
+            <p id="chatTicketNumber"
+              style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            </p>
           </div>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <button class="chat-end-btn" id="endChatBtn" onclick="endCurrentChat()" style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 8px; color: #ef4444; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; margin-left: 0.5rem;">
+          <button class="chat-end-btn" id="endChatBtn" onclick="endCurrentChat()"
+            style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); border-radius: 8px; color: #ef4444; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; margin-left: 0.5rem;">
             End Chat
           </button>
           <div class="chat-close" onclick="closeChatModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -582,7 +599,8 @@
       <div class="chat-input-container">
         <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
         <button class="chat-send-btn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <line x1="22" y1="2" x2="11" y2="13"></line>
             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
@@ -592,17 +610,22 @@
   </div>
 
   <!-- End Chat Confirmation Modal -->
-  <div id="endChatConfirmModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
-    <div style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+  <div id="endChatConfirmModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center;">
+    <div
+      style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; padding: 2rem; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
       <h3 style="margin: 0 0 1rem 0; font-size: 1.25rem; color: white;">End Chat Confirmation</h3>
       <p style="margin: 0 0 1.5rem 0; color: rgba(255, 255, 255, 0.8); line-height: 1.5;">
-        Are you sure you want to end this chat? You can still view it later in Previous Chats, but no further messages can be sent.
+        Are you sure you want to end this chat? You can still view it later in Previous Chats, but no further messages
+        can be sent.
       </p>
       <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
-        <button onclick="hideEndChatConfirmation()" style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+        <button onclick="hideEndChatConfirmation()"
+          style="padding: 0.75rem 1.5rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
           Cancel
         </button>
-        <button onclick="confirmEndChat()" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ef4444, #dc2626); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
+        <button onclick="confirmEndChat()"
+          style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #ef4444, #dc2626); border: none; border-radius: 8px; color: white; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);">
           End Chat
         </button>
       </div>
@@ -611,9 +634,10 @@
 
   <!-- Topbar -->
   <div class="topbar">
-    <button class="back-btn" onclick="window.location.href='rider_home.html'">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
+    <button class="back-btn" onclick="window.location.href='home.html'">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
       </svg>
     </button>
     <div class="topbar-center">Rider Support — RapidRide</div>
@@ -641,7 +665,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Toggle the "Driver Status" switch on your dashboard from offline to online. Once you're online, you'll start receiving ride requests based on your location. Make sure your location services are enabled and you have a stable internet connection.
+            Toggle the "Driver Status" switch on your dashboard from offline to online. Once you're online, you'll start
+            receiving ride requests based on your location. Make sure your location services are enabled and you have a
+            stable internet connection.
           </div>
         </div>
       </div>
@@ -653,7 +679,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            When you receive a ride request, you'll see a notification with the pickup location, destination, and estimated fare. Tap "Accept" to confirm. You can also enable "Auto Accept" in your preferences to automatically accept rides that match your criteria.
+            When you receive a ride request, you'll see a notification with the pickup location, destination, and
+            estimated fare. Tap "Accept" to confirm. You can also enable "Auto Accept" in your preferences to
+            automatically accept rides that match your criteria.
           </div>
         </div>
       </div>
@@ -665,7 +693,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            You need: (1) A valid driver's license, (2) Vehicle registration documents, (3) Valid insurance, (4) A smartphone with GPS, (5) Clean driving record, (6) Vehicle that meets our standards (age, condition, safety features). All documents are verified during the onboarding process.
+            You need: (1) A valid driver's license, (2) Vehicle registration documents, (3) Valid insurance, (4) A
+            smartphone with GPS, (5) Clean driving record, (6) Vehicle that meets our standards (age, condition, safety
+            features). All documents are verified during the onboarding process.
           </div>
         </div>
       </div>
@@ -685,7 +715,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Click on "View Earnings" in the Quick Links section of your dashboard. You can see today's earnings, weekly totals, and monthly summaries. The earnings page also shows a detailed breakdown of each completed ride including fare, tips, and bonuses.
+            Click on "View Earnings" in the Quick Links section of your dashboard. You can see today's earnings, weekly
+            totals, and monthly summaries. The earnings page also shows a detailed breakdown of each completed ride
+            including fare, tips, and bonuses.
           </div>
         </div>
       </div>
@@ -697,7 +729,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Earnings are automatically transferred to your registered bank account every week on Monday. You can also use "Instant Pay" to cash out your earnings immediately (small processing fee applies). Minimum payout threshold is ₹500.
+            Earnings are automatically transferred to your registered bank account every week on Monday. You can also
+            use "Instant Pay" to cash out your earnings immediately (small processing fee applies). Minimum payout
+            threshold is ₹500.
           </div>
         </div>
       </div>
@@ -709,7 +743,8 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Fare is based on: Base fare + (Distance × per km rate) + (Time × per minute rate) + Any applicable surge pricing. You earn 80% of the total fare, with 20% going to RapidRide as service fee. Tips go 100% to you.
+            Fare is based on: Base fare + (Distance × per km rate) + (Time × per minute rate) + Any applicable surge
+            pricing. You earn 80% of the total fare, with 20% going to RapidRide as service fee. Tips go 100% to you.
           </div>
         </div>
       </div>
@@ -721,7 +756,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Surge pricing activates during high-demand periods (rush hours, bad weather, events). You'll earn 1.5x to 3x normal rates. Bonuses are awarded for completing a certain number of rides, maintaining high ratings, or driving during specific hours. Check the Earnings page for active promotions.
+            Surge pricing activates during high-demand periods (rush hours, bad weather, events). You'll earn 1.5x to 3x
+            normal rates. Bonuses are awarded for completing a certain number of rides, maintaining high ratings, or
+            driving during specific hours. Check the Earnings page for active promotions.
           </div>
         </div>
       </div>
@@ -741,7 +778,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            After each ride, riders rate you from 1 to 5 stars. Your overall rating is the average of your last 500 rides. Maintain a rating above 4.6 to stay in good standing. High ratings unlock bonuses and priority ride requests. You can also rate riders after each trip.
+            After each ride, riders rate you from 1 to 5 stars. Your overall rating is the average of your last 500
+            rides. Maintain a rating above 4.6 to stay in good standing. High ratings unlock bonuses and priority ride
+            requests. You can also rate riders after each trip.
           </div>
         </div>
       </div>
@@ -753,7 +792,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            If a rider cancels after you've accepted and started driving to the pickup location, you'll receive a cancellation fee (typically ₹50-80). This compensates you for your time and fuel. The fee is automatically added to your earnings.
+            If a rider cancels after you've accepted and started driving to the pickup location, you'll receive a
+            cancellation fee (typically ₹50-80). This compensates you for your time and fuel. The fee is automatically
+            added to your earnings.
           </div>
         </div>
       </div>
@@ -765,7 +806,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Yes, but frequent cancellations affect your acceptance rate and may impact your account standing. Valid reasons for cancellation include: rider not showing up after 5 minutes, safety concerns, or vehicle issues. Use the cancel button and select a reason.
+            Yes, but frequent cancellations affect your acceptance rate and may impact your account standing. Valid
+            reasons for cancellation include: rider not showing up after 5 minutes, safety concerns, or vehicle issues.
+            Use the cancel button and select a reason.
           </div>
         </div>
       </div>
@@ -777,7 +820,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            For safety emergencies, use the in-app emergency button to contact local authorities. For other issues (wrong destination, rider behavior, payment problems), contact support immediately through the app. You can also end the ride early if you feel unsafe.
+            For safety emergencies, use the in-app emergency button to contact local authorities. For other issues
+            (wrong destination, rider behavior, payment problems), contact support immediately through the app. You can
+            also end the ride early if you feel unsafe.
           </div>
         </div>
       </div>
@@ -797,7 +842,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Go to your Profile page and click "Update Vehicle" in the Vehicle Information section. You can change your vehicle model, type, registration number, and color. Changes require verification and may take 24-48 hours to process.
+            Go to your Profile page and click "Update Vehicle" in the Vehicle Information section. You can change your
+            vehicle model, type, registration number, and color. Changes require verification and may take 24-48 hours
+            to process.
           </div>
         </div>
       </div>
@@ -809,7 +856,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Driver's license and vehicle registration must be valid at all times. You'll receive notifications 30 days before any document expires. Upload renewed documents through your profile page. riding with expired documents will result in account suspension.
+            Driver's license and vehicle registration must be valid at all times. You'll receive notifications 30 days
+            before any document expires. Upload renewed documents through your profile page. riding with expired
+            documents will result in account suspension.
           </div>
         </div>
       </div>
@@ -821,7 +870,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            We accept sedans, hatchbacks, and SUVs that are less than 10 years old. Vehicle must have 4 doors, working AC, seat belts for all passengers, and pass our safety inspection. Premium vehicles (luxury sedans, SUVs) can qualify for higher fare rates.
+            We accept sedans, hatchbacks, and SUVs that are less than 10 years old. Vehicle must have 4 doors, working
+            AC, seat belts for all passengers, and pass our safety inspection. Premium vehicles (luxury sedans, SUVs)
+            can qualify for higher fare rates.
           </div>
         </div>
       </div>
@@ -841,7 +892,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            RapidRide includes: (1) Real-time GPS tracking, (2) Emergency button to contact authorities, (3) Ride sharing with trusted contacts, (4) 24/7 safety support line, (5) Two-way ratings, (6) Rider verification, (7) Insurance coverage for all rides.
+            RapidRide includes: (1) Real-time GPS tracking, (2) Emergency button to contact authorities, (3) Ride
+            sharing with trusted contacts, (4) 24/7 safety support line, (5) Two-way ratings, (6) Rider verification,
+            (7) Insurance coverage for all rides.
           </div>
         </div>
       </div>
@@ -853,7 +906,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Be professional and courteous. Maintain a clean vehicle. Follow traffic laws. Don't discriminate based on pickup/dropoff location, race, religion, or disability. Don't ask for off-app payments. Don't use your phone while driving (except for navigation). Violations result in warnings or account deactivation.
+            Be professional and courteous. Maintain a clean vehicle. Follow traffic laws. Don't discriminate based on
+            pickup/dropoff location, race, religion, or disability. Don't ask for off-app payments. Don't use your phone
+            while driving (except for navigation). Violations result in warnings or account deactivation.
           </div>
         </div>
       </div>
@@ -865,7 +920,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Yes, all rides are covered by RapidRide's commercial insurance policy. This includes liability coverage for bodily injury and property damage while you're on an active ride (from pickup to dropoff). Your personal insurance covers you while waiting for rides.
+            Yes, all rides are covered by RapidRide's commercial insurance policy. This includes liability coverage for
+            bodily injury and property damage while you're on an active ride (from pickup to dropoff). Your personal
+            insurance covers you while waiting for rides.
           </div>
         </div>
       </div>
@@ -885,7 +942,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Click on your profile picture in the top-right corner to access your profile page. You can update your name, avatar, license number, and vehicle information. Phone number and email changes require verification for security.
+            Click on your profile picture in the top-right corner to access your profile page. You can update your name,
+            avatar, license number, and vehicle information. Phone number and email changes require verification for
+            security.
           </div>
         </div>
       </div>
@@ -897,7 +956,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Auto Accept: Automatically accepts rides meeting your criteria. Push Notifications: Alerts for new rides and updates. SMS Alerts: Text messages for important events. Voice Navigation: Turn-by-turn audio directions. Adjust these in your profile preferences.
+            Auto Accept: Automatically accepts rides meeting your criteria. Push Notifications: Alerts for new rides and
+            updates. SMS Alerts: Text messages for important events. Voice Navigation: Turn-by-turn audio directions.
+            Adjust these in your profile preferences.
           </div>
         </div>
       </div>
@@ -909,7 +970,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Simply toggle your Driver Status to "Offline" on the dashboard. You won't receive any ride requests while offline. There's no penalty for going offline, and you can come back online anytime. Take breaks as needed to rest and stay safe.
+            Simply toggle your Driver Status to "Offline" on the dashboard. You won't receive any ride requests while
+            offline. There's no penalty for going offline, and you can come back online anytime. Take breaks as needed
+            to rest and stay safe.
           </div>
         </div>
       </div>
@@ -921,7 +984,9 @@
         </div>
         <div class="faq-answer">
           <div class="faq-answer-content">
-            Go to your Profile page and scroll to the Danger Zone section. Click "Delete Account" and confirm. All pending earnings will be paid out within 7 business days. You can reactivate your account within 30 days by contacting support.
+            Go to your Profile page and scroll to the Danger Zone section. Click "Delete Account" and confirm. All
+            pending earnings will be paid out within 7 business days. You can reactivate your account within 30 days by
+            contacting support.
           </div>
         </div>
       </div>
@@ -933,14 +998,18 @@
       <p>Our support team is available 24/7 to assist you</p>
       <div class="contact-buttons">
         <button class="contact-btn" onclick="startNewChat()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           Contact Admin
         </button>
         <button class="contact-btn" onclick="openChatListModal()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path
+              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+            </path>
           </svg>
           View Previous Chats
         </button>
@@ -954,14 +1023,14 @@
       const question = item.querySelector('.faq-question');
       question.addEventListener('click', () => {
         const isOpen = item.classList.contains('open');
-        
+
         // Close all other items
         document.querySelectorAll('.faq-item').forEach(otherItem => {
           if (otherItem !== item) {
             otherItem.classList.remove('open');
           }
         });
-        
+
         // Toggle current item
         if (isOpen) {
           item.classList.remove('open');
@@ -989,12 +1058,12 @@
             userType: 'rider'
           }
         });
-        
+
         console.log('Response status:', response.status);
         console.log('Response data:', response.data);
         console.log('data.success:', response.data?.success);
         console.log('data.chat:', response.data?.chat);
-        
+
         if (data.success) {
           currentChatId = data.chat.chatId;
           currentTicketNumber = data.chat.ticketNumber;
@@ -1031,12 +1100,12 @@
         const response = await apiFetch('/support/chats', {
           method: 'GET'
         });
-        
+
         console.log('Chat list response status:', response.status);
         const data = await response.json();
         console.log('Chat list data:', data);
         const container = document.getElementById('chatListContainer');
-        
+
         if (data.chats && data.chats.length > 0) {
           container.innerHTML = '';
           data.chats.forEach(chat => {
@@ -1063,44 +1132,44 @@
       const div = document.createElement('div');
       div.className = 'chat-list-item';
       div.onclick = () => openExistingChat(chat.chatId);
-      
+
       const header = document.createElement('div');
       header.className = 'chat-list-header';
-      
+
       const ticket = document.createElement('span');
       ticket.className = 'chat-ticket';
       ticket.textContent = chat.ticketNumber;
-      
+
       const badge = document.createElement('span');
       badge.className = `chat-status-badge ${chat.status}`;
       badge.textContent = chat.status;
-      
+
       header.appendChild(ticket);
       header.appendChild(badge);
-      
+
       const preview = document.createElement('div');
       preview.className = 'chat-list-preview';
       preview.textContent = chat.lastMessage || 'No messages yet';
-      
+
       const footer = document.createElement('div');
       footer.className = 'chat-list-footer';
-      
+
       const date = document.createElement('span');
       date.textContent = new Date(chat.updatedAt).toLocaleDateString();
-      
+
       footer.appendChild(date);
-      
+
       if (chat.unreadCount > 0) {
         const unreadBadge = document.createElement('span');
         unreadBadge.className = 'chat-unread-badge';
         unreadBadge.textContent = `${chat.unreadCount} new`;
         footer.appendChild(unreadBadge);
       }
-      
+
       div.appendChild(header);
       div.appendChild(preview);
       div.appendChild(footer);
-      
+
       return div;
     }
 
@@ -1123,15 +1192,15 @@
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
         if (data.success) {
           const chat = data.chat;
           currentTicketNumber = chat.ticketNumber;
-          
+
           // Update ticket number display
           document.getElementById('chatTicketNumber').textContent = `Ticket: ${chat.ticketNumber}`;
-          
+
           // Update end button visibility
           const endBtn = document.getElementById('endChatBtn');
           if (chat.status === 'ended') {
@@ -1139,7 +1208,7 @@
           } else {
             endBtn.style.display = 'block';
           }
-          
+
           // Hide input container if chat is ended
           const inputContainer = document.querySelector('.chat-input-container');
           if (chat.status === 'ended') {
@@ -1147,10 +1216,10 @@
           } else {
             inputContainer.style.display = 'flex';
           }
-          
+
           const messagesContainer = document.getElementById('chatMessages');
           messagesContainer.innerHTML = '';
-          
+
           if (chat.messages.length > 0) {
             chat.messages.forEach(msg => {
               const isSent = msg.senderType === 'rider';
@@ -1159,7 +1228,7 @@
             });
             lastMessageTimestamp = chat.messages[chat.messages.length - 1].timestamp;
           }
-          
+
           messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
       } catch (error) {
@@ -1189,14 +1258,14 @@
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
         if (data.success) {
           const chat = data.chat;
-          const newMessages = chat.messages.filter(msg => 
+          const newMessages = chat.messages.filter(msg =>
             !lastMessageTimestamp || msg.timestamp > lastMessageTimestamp
           );
-          
+
           if (newMessages.length > 0) {
             const messagesContainer = document.getElementById('chatMessages');
             newMessages.forEach(msg => {
@@ -1236,7 +1305,7 @@
     async function sendMessage() {
       const input = document.getElementById('chatInput');
       const message = input.value.trim();
-      
+
       if (message && currentChatId) {
         try {
           const token = localStorage.getItem('token');
@@ -1248,28 +1317,28 @@
             },
             body: JSON.stringify({ message })
           });
-          
+
           const data = await response.json();
           if (data.success) {
             const messagesContainer = document.getElementById('chatMessages');
-            
+
             // Remove empty state if present
             const emptyState = messagesContainer.querySelector('.chat-empty');
             if (emptyState) {
               emptyState.remove();
             }
-            
+
             // Add message to UI
             const userMessage = createMessageElement(message, true);
             messagesContainer.appendChild(userMessage);
-            
+
             // Clear input
             input.value = '';
             input.style.height = 'auto';
-            
+
             // Scroll to bottom
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
+
             // Update last message timestamp
             lastMessageTimestamp = new Date().toISOString();
           }
@@ -1291,7 +1360,7 @@
 
     async function confirmEndChat() {
       if (!currentChatId) return;
-      
+
       try {
         const token = localStorage.getItem('token');
         const response = await fetch(`${API_CONFIG.BASE_URL}/support/chats/${currentChatId}/end`, {
@@ -1300,7 +1369,7 @@
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         const data = await response.json();
         if (data.success) {
           hideEndChatConfirmation();
@@ -1313,7 +1382,7 @@
         alert('Failed to end chat. Please try again.');
       }
     }
-    
+
     // Keep for backward compatibility
     async function endCurrentChat() {
       showEndChatConfirmation();
@@ -1323,10 +1392,10 @@
     function createMessageElement(text, isSent, timestamp) {
       const messageDiv = document.createElement('div');
       messageDiv.className = `chat-message ${isSent ? 'sent' : ''}`;
-      
+
       const time = timestamp ? new Date(timestamp) : new Date();
       const timeStr = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      
+
       messageDiv.innerHTML = `
         <div class="chat-avatar">${isSent ? 'D' : 'A'}</div>
         <div>
@@ -1334,20 +1403,20 @@
           <div class="chat-time">${timeStr}</div>
         </div>
       `;
-      
+
       return messageDiv;
     }
 
     // Auto-resize textarea
     const chatInput = document.getElementById('chatInput');
     if (chatInput) {
-      chatInput.addEventListener('input', function() {
+      chatInput.addEventListener('input', function () {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 100) + 'px';
       });
 
       // Send message on Enter (without Shift)
-      chatInput.addEventListener('keypress', function(e) {
+      chatInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter' && !e.shiftKey) {
           e.preventDefault();
           sendMessage();
@@ -1356,7 +1425,7 @@
     }
 
     // Close modal on Escape key
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
         const chatModal = document.getElementById('chatModal');
         const chatListModal = document.getElementById('chatListModal');
@@ -1375,4 +1444,5 @@
   <script src="../common/js/firebase-config.js"></script>
   <script src="../common/js/auth.js"></script>
 </body>
+
 </html>

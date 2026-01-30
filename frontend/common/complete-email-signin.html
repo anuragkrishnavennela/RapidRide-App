@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,12 +60,17 @@
             animation: spin 1s linear infinite;
             margin: 2rem auto;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         .status-text {
             text-align: center;
             margin: 1.5rem 0;
@@ -158,6 +164,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
@@ -168,7 +175,7 @@
 
             <div class="spinner"></div>
             <div class="status-text" id="status">Verifying your email link...</div>
-            
+
             <div id="error-message" class="error-message" style="display: none;"></div>
             <div id="success-message" class="success-message" style="display: none;"></div>
 
@@ -199,35 +206,35 @@
                 // Get email from URL parameter only
                 const urlParams = new URLSearchParams(window.location.search);
                 let email = urlParams.get('email');
-                
+
                 // If still no email, we need to ask (Firebase requires it)
                 if (!email) {
                     // Show a message instead of throwing error
                     document.querySelector('.spinner').style.display = 'none';
-                    document.getElementById('status').innerHTML = 
+                    document.getElementById('status').innerHTML =
                         '⚠️ Email Confirmation Required<br><br>' +
                         'Please enter the <strong>exact email address</strong> you used to request this sign-in link:';
-                    
+
                     // Create email input dynamically
                     const emailInput = document.createElement('input');
                     emailInput.type = 'email';
                     emailInput.placeholder = 'Enter the email you signed in with';
                     emailInput.style.cssText = 'width: 100%; padding: 12px; margin: 20px 0; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 8px; color: white; font-size: 16px;';
-                    
+
                     const warningText = document.createElement('p');
                     warningText.textContent = '⚠️ This must match the email where you received the link';
                     warningText.style.cssText = 'color: #fbbf24; font-size: 0.85rem; margin: 10px 0;';
-                    
+
                     const submitBtn = document.createElement('button');
                     submitBtn.textContent = 'Continue';
                     submitBtn.className = 'btn-primary';
                     submitBtn.style.cssText = 'width: 100%; padding: 12px; margin-top: 10px;';
-                    
+
                     const container = document.querySelector('.auth-card');
                     container.appendChild(emailInput);
                     container.appendChild(warningText);
                     container.appendChild(submitBtn);
-                    
+
                     // Wait for user to enter email
                     email = await new Promise((resolve) => {
                         submitBtn.onclick = () => {
@@ -243,7 +250,7 @@
                                 alert('Please enter a valid email address');
                             }
                         };
-                        
+
                         emailInput.addEventListener('keypress', (e) => {
                             if (e.key === 'Enter') {
                                 submitBtn.click();
@@ -251,17 +258,17 @@
                         });
                     });
                 }
-                
+
                 console.log('Signing in with email:', email);
-                
+
                 // Sign in with email link
                 const result = await window.firebaseAuth.signInWithEmailLink(email, window.location.href);
-                
+
                 console.log('User signed in:', result.user);
-                
+
                 // Get Firebase ID token
                 const idToken = await result.user.getIdToken();
-                
+
                 // Send to backend
                 const response = await fetch('/api/auth/firebase-email', {
                     method: 'POST',
@@ -298,7 +305,7 @@
                     } else if (data.user.role === 'captain' || data.user.role === 'driver') {
                         window.location.href = '../driver/driver_home.html';
                     } else if (data.user.role === 'rider') {
-                        window.location.href = '../rider/rider_home.html';
+                        window.location.href = '../rider/home.html';
                     } else {
                         window.location.href = '../index.html';
                     }
@@ -306,10 +313,10 @@
 
             } catch (error) {
                 console.error('Email link sign-in error:', error);
-                
+
                 document.querySelector('.spinner').style.display = 'none';
                 document.getElementById('status').textContent = '';
-                
+
                 let errorMsg = 'Error: ' + error.message;
                 if (error.code === 'auth/invalid-action-code') {
                     errorMsg = 'This sign-in link is invalid or has expired. Please request a new one.';
@@ -320,7 +327,7 @@
                 } else if (error.code === 'auth/user-disabled') {
                     errorMsg = 'This account has been disabled. Please contact support.';
                 }
-                
+
                 document.getElementById('error-message').textContent = errorMsg;
                 document.getElementById('error-message').style.display = 'block';
             }
@@ -330,4 +337,5 @@
         window.addEventListener('load', completeSignIn);
     </script>
 </body>
+
 </html>

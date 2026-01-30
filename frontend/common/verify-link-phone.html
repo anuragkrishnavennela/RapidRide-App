@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Verify Phone OTP — RapidRide</title>
   <link rel="stylesheet" href="css/global.css">
   <style>
@@ -12,12 +13,14 @@
       justify-content: center;
       min-height: 100vh;
     }
+
     .otp-input-group {
       display: flex;
       gap: 0.75rem;
       justify-content: center;
       margin: 2rem 0;
     }
+
     .otp-input {
       width: 50px;
       height: 60px;
@@ -30,34 +33,41 @@
       font-weight: 600;
       transition: all 0.3s ease;
     }
+
     .otp-input:focus {
       outline: none;
       border-color: var(--primary);
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
-    .error-msg, .success-msg {
+
+    .error-msg,
+    .success-msg {
       padding: 0.75rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       display: none;
     }
+
     .error-msg {
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid #ef4444;
       color: #ef4444;
     }
+
     .success-msg {
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid #10b981;
       color: #10b981;
     }
+
     .resend-section {
       text-align: center;
       margin-top: 1.5rem;
       padding-top: 1.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
+
     .step-indicator {
       text-align: center;
       margin-bottom: 2rem;
@@ -66,6 +76,7 @@
       border-radius: 8px;
       border: 1px solid rgba(99, 102, 241, 0.2);
     }
+
     .step-indicator h3 {
       margin: 0;
       color: var(--primary);
@@ -73,6 +84,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
     <div class="glass-card slide-up" style="max-width: 500px; width: 100%; padding: 3rem;">
@@ -163,7 +175,7 @@
     otpInputs.forEach((input, index) => {
       input.addEventListener('input', (e) => {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        
+
         if (e.target.value && index < otpInputs.length - 1) {
           otpInputs[index + 1].focus();
         }
@@ -184,13 +196,13 @@
       input.addEventListener('paste', (e) => {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-        
+
         for (let i = 0; i < Math.min(pastedData.length, 6); i++) {
           if (otpInputs[i]) {
             otpInputs[i].value = pastedData[i];
           }
         }
-        
+
         const nextEmpty = Array.from(otpInputs).findIndex(input => !input.value);
         if (nextEmpty !== -1) {
           otpInputs[nextEmpty].focus();
@@ -205,7 +217,7 @@
     const timer = setInterval(() => {
       countdown--;
       countdownEl.textContent = countdown;
-      
+
       if (countdown <= 0) {
         clearInterval(timer);
         resendButton.disabled = false;
@@ -216,9 +228,9 @@
     // Handle verification
     document.getElementById('verifyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const otp = Array.from(otpInputs).map(input => input.value).join('');
-      
+
       if (otp.length !== 6) {
         showError('Please enter the 6-digit verification code');
         return;
@@ -272,7 +284,7 @@
 
           setTimeout(() => {
             const user = JSON.parse(emailUser);
-            
+
             // Check if user ALREADY has profile completed
             if (user.name && user.role) {
               // Existing user - go to dashboard
@@ -281,7 +293,7 @@
               } else if (user.role === 'admin') {
                 window.location.href = '../admin/admin_dashboard.html';
               } else {
-                window.location.href = '../rider/rider_home.html';
+                window.location.href = '../rider/home.html';
               }
             } else {
               // New user - complete profile
@@ -296,7 +308,7 @@
 
       } catch (error) {
         console.error('❌ Verification error:', error);
-        
+
         if (error.code === 'auth/invalid-verification-code') {
           showError('Invalid code. Please check and try again.');
         } else if (error.code === 'auth/code-expired') {
@@ -304,10 +316,10 @@
         } else {
           showError(error.message || 'Verification failed. Please try again.');
         }
-        
+
         verifyButton.disabled = false;
         verifyButton.textContent = 'Verify & Complete Sign-In';
-        
+
         // Clear OTP inputs
         otpInputs.forEach(input => input.value = '');
         otpInputs[0].focus();
@@ -325,4 +337,5 @@
     });
   </script>
 </body>
+
 </html>

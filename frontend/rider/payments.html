@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -252,6 +253,7 @@
   </style>
   <script src="../common/js/config.js"></script>
 </head>
+
 <body>
   <header class="topbar">
     <div class="topbar-left">
@@ -259,14 +261,14 @@
       <span>Payments</span>
     </div>
     <div>
-      <a href="rider_home.html" class="btn btn-secondary">← Back to Home</a>
+      <a href="home.html" class="btn btn-secondary">← Back to Home</a>
     </div>
   </header>
 
   <main class="container">
     <section class="payment-methods">
       <h2 class="section-title">Payment Methods</h2>
-      
+
       <div class="method-card active" data-method="cash">
         <div class="method-icon">💵</div>
         <div class="method-info">
@@ -315,7 +317,7 @@
 
     <section class="transaction-history">
       <h2 class="section-title">Recent Transactions</h2>
-      
+
       <div id="transactionList" class="transaction-list">
         <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
           <div style="font-size: 3rem; margin-bottom: 1rem;">💳</div>
@@ -336,7 +338,8 @@
 
       <div class="form-group">
         <label>Payment Type</label>
-        <select id="paymentType" style="width: 100%; padding: 0.9rem; background: rgba(255, 255, 255, 0.05); border: 2px solid var(--glass-border); border-radius: 8px; color: var(--text); font-size: 1rem;">
+        <select id="paymentType"
+          style="width: 100%; padding: 0.9rem; background: rgba(255, 255, 255, 0.05); border: 2px solid var(--glass-border); border-radius: 8px; color: var(--text); font-size: 1rem;">
           <option value="card">Credit/Debit Card</option>
           <option value="upi">UPI</option>
           <option value="netbanking">Net Banking</option>
@@ -384,10 +387,10 @@
     document.querySelectorAll('.method-card').forEach(card => {
       card.addEventListener('click', (e) => {
         if (e.target.closest('.method-actions')) return;
-        
+
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
         card.classList.add('active');
-        
+
         const method = card.dataset.method;
         console.log('Selected payment method:', method);
       });
@@ -431,4 +434,5 @@
     });
   </script>
 </body>
+
 </html>

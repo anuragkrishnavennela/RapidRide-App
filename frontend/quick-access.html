@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -19,38 +21,45 @@
             align-items: center;
             padding: 20px;
         }
+
         .container {
             background: white;
             border-radius: 20px;
             padding: 40px 30px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.5s ease;
         }
+
         @keyframes slideUp {
             from {
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         .logo {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .logo h1 {
             color: #667eea;
             font-size: 32px;
             margin-bottom: 5px;
         }
+
         .logo p {
             color: #666;
             font-size: 14px;
         }
+
         .info-box {
             background: #f8f9fa;
             border-left: 4px solid #667eea;
@@ -58,11 +67,13 @@
             border-radius: 8px;
             margin-bottom: 25px;
         }
+
         .info-box strong {
             display: block;
             color: #333;
             margin-bottom: 8px;
         }
+
         .info-box code {
             background: #2d2d2d;
             color: #0f0;
@@ -72,12 +83,14 @@
             font-size: 13px;
             word-break: break-all;
         }
+
         h2 {
             color: #764ba2;
             font-size: 20px;
             margin: 25px 0 15px 0;
             text-align: center;
         }
+
         .btn {
             display: block;
             width: 100%;
@@ -91,35 +104,43 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
+
         .btn:active {
             transform: scale(0.98);
         }
+
         .btn-rider {
             background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
         }
+
         .btn-rider:hover {
             background: linear-gradient(135deg, #45a049, #4CAF50);
             box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
         }
+
         .btn-driver {
             background: linear-gradient(135deg, #2196F3, #1976D2);
             color: white;
         }
+
         .btn-driver:hover {
             background: linear-gradient(135deg, #1976D2, #2196F3);
             box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
         }
+
         .btn-admin {
             background: linear-gradient(135deg, #FF9800, #F57C00);
             color: white;
         }
+
         .btn-admin:hover {
             background: linear-gradient(135deg, #F57C00, #FF9800);
             box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
         }
+
         .warning {
             background: #fff3cd;
             border: 1px solid #ffc107;
@@ -129,21 +150,26 @@
             font-size: 13px;
             color: #856404;
         }
+
         .warning strong {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
         }
+
         .warning ul {
             margin-left: 20px;
         }
+
         .warning li {
             margin: 5px 0;
         }
+
         .emoji {
             font-size: 24px;
             margin-right: 8px;
         }
+
         .status {
             text-align: center;
             padding: 10px;
@@ -151,16 +177,19 @@
             margin-bottom: 20px;
             font-weight: 600;
         }
+
         .status.online {
             background: #d4edda;
             color: #155724;
         }
+
         .status.offline {
             background: #f8d7da;
             color: #721c24;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="logo">
@@ -179,7 +208,7 @@
 
         <h2>Choose Your Role:</h2>
 
-        <a href="rider/rider_home.html" class="btn btn-rider">
+        <a href="rider/home.html" class="btn btn-rider">
             <span class="emoji">🧑</span>Rider Dashboard
         </a>
 
@@ -222,7 +251,7 @@
                     method: 'GET',
                     timeout: 5000
                 });
-                
+
                 if (response.ok) {
                     document.getElementById('status').className = 'status online';
                     document.getElementById('status').textContent = '✅ Backend Connected';
@@ -240,4 +269,5 @@
         setInterval(checkBackend, 10000);
     </script>
 </body>
+
 </html>
