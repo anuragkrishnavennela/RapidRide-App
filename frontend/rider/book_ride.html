@@ -304,7 +304,7 @@
 
     function addMarker(type, loc) {
       if (markers[type]) map.removeLayer(markers[type]);
-      const color = type === 'pickup' ? '#1C1917' : '#F2C94C'; // Black pickup, Yellow drop
+      const color = type === 'pickup' ? '#1C1917' : '#2E2E2E'; // Black pickup, Charcoal drop
       const marker = L.marker([loc.lat, loc.lng], {
         icon: L.divIcon({
           className: 'custom-pin',

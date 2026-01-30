@@ -1,23 +1,29 @@
 /* Global Design System - Premium Transport (Cream & Warm Black) */
-/* Palette: Cream (#FBF9F4) - White (#FFFFFF) - Warm Black (#1C1917) - Accent Yellow (#F2C94C) */
+/* Palette: Cream (#FBF9F4) - White (#FFFFFF) - Warm Black (#1C1917) - Accent Charcoal (#2E2E2E) */
+
+/* ──────────────────────────────────
+   🎨 1. Design Tokens (CSS Variables)
+   ────────────────────────────────── */
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap");
 
 :root {
-  /* Core Colors */
-  --bg-app: #FBF9F4;
-  /* Soft Cream */
+  /* Background Colors */
+  --bg-app: #F8F5EC;
+  /* Warm cream for main background */
   --bg-surface: #FFFFFF;
-  /* Pure White */
+  /* Pure white for cards, panels */
 
   --primary: #1C1917;
-  /* Warm Black (Text & Primary Actions) */
+  /* Warm black for primary actions */
+  --primary-dark: #0F0E0D;
+  /* Darker hover state */
   --text-main: #1C1917;
   --text-secondary: #57534E;
   /* Muted Brown-Gray */
   --text-muted: #A8A29E;
 
-  --accent: #F2C94C;
-  /* Transport Yellow (Buttons/Active) */
+  --accent: #2E2E2E;
+  /* Transport Charcoal (Buttons/Active) */
   --accent-hover: #E3B42C;
 
   --border: #E8E2D4;
@@ -165,7 +171,7 @@ h3 {
 .btn-primary {
   background-color: var(--accent);
   color: var(--primary);
-  /* Black text on yellow */
+  /* Black text on charcoal */
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
   /* Subtle tactile depth */
 }
