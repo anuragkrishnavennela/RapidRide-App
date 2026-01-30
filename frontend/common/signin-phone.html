@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Phone Sign In — RapidRide</title>
   <link rel="stylesheet" href="css/global.css">
   <style>
@@ -12,6 +13,7 @@
       justify-content: center;
       min-height: 100vh;
     }
+
     .phone-input-wrapper {
       position: relative;
       display: flex;
@@ -23,11 +25,13 @@
       transition: all 0.3s ease;
       margin-bottom: 1.5rem;
     }
+
     .phone-input-wrapper:focus-within {
       border-color: var(--primary);
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
+
     .country-prefix {
       display: flex;
       align-items: center;
@@ -40,10 +44,12 @@
       margin-right: 8px;
       user-select: none;
     }
+
     .country-flag {
       font-size: 24px;
       margin-right: 8px;
     }
+
     .phone-number {
       flex: 1;
       background: transparent;
@@ -55,15 +61,19 @@
       font-weight: 500;
       letter-spacing: 0.5px;
     }
+
     .phone-number::placeholder {
       color: var(--text-muted);
     }
+
     #recaptcha-container {
       display: flex;
       justify-content: center;
       margin: 0.5rem 0;
-      min-height: 10px; /* Minimal for invisible reCAPTCHA */
+      min-height: 10px;
+      /* Minimal for invisible reCAPTCHA */
     }
+
     .info-box {
       background: rgba(59, 130, 246, 0.1);
       border-left: 4px solid #3b82f6;
@@ -73,6 +83,7 @@
       font-size: 0.9rem;
       color: var(--text-muted);
     }
+
     .test-numbers {
       background: rgba(251, 146, 60, 0.1);
       border-left: 4px solid #fb923c;
@@ -81,48 +92,58 @@
       border-radius: 8px;
       font-size: 0.85rem;
     }
+
     .test-numbers h4 {
       margin: 0 0 0.5rem 0;
       color: #fb923c;
     }
+
     .test-numbers code {
       background: rgba(0, 0, 0, 0.3);
       padding: 2px 6px;
       border-radius: 4px;
       font-family: monospace;
     }
-    .error-msg, .success-msg {
+
+    .error-msg,
+    .success-msg {
       padding: 0.75rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       display: none;
     }
+
     .error-msg {
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid #ef4444;
       color: #ef4444;
     }
+
     .success-msg {
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid #10b981;
       color: #10b981;
     }
+
     .auth-footer {
       text-align: center;
       margin-top: 2rem;
       padding-top: 1.5rem;
       border-top: 1px solid var(--glass-border);
     }
+
     .auth-footer a {
       color: var(--primary);
       text-decoration: none;
       font-weight: 600;
     }
+
     .auth-footer a:hover {
       text-decoration: underline;
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
     <div class="glass-card slide-up" style="max-width: 500px; width: 100%; padding: 3rem;">
@@ -140,16 +161,8 @@
             <span class="country-flag">🇮🇳</span>
             <span>+91</span>
           </div>
-          <input 
-            type="tel" 
-            id="phoneInput" 
-            class="phone-number"
-            placeholder="9876543210" 
-            required
-            pattern="[6-9][0-9]{9}"
-            maxlength="10"
-            title="Enter a valid 10-digit mobile number"
-          >
+          <input type="tel" id="phoneInput" class="phone-number" placeholder="9876543210" required
+            pattern="[6-9][0-9]{9}" maxlength="10" title="Enter a valid 10-digit mobile number">
         </div>
 
         <div id="recaptcha-container"></div>
@@ -171,13 +184,16 @@
           💡 Test numbers must be configured in Firebase Console → Authentication → Phone → "Phone numbers for testing"
         </p>
         <p style="font-size: 0.8rem; color: #fb923c; margin-top: 0.5rem;">
-          ⚠️ <strong>Important:</strong> These bypass reCAPTCHA - use them if you're getting auth/invalid-app-credential errors
+          ⚠️ <strong>Important:</strong> These bypass reCAPTCHA - use them if you're getting auth/invalid-app-credential
+          errors
         </p>
       </div>
 
       <div class="auth-footer">
-        <p style="font-size: 0.85rem; color: var(--text-muted);">Secondary option: <a href="signin.html">Sign in with Email</a> (requires phone verification)</p>
-        <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">New to RapidRide? <a href="verify-phone.html" style="color: var(--primary); font-weight: 600;">Create an account</a></p>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">Secondary option: <a href="signin.html">Sign in with
+            Email</a> (requires phone verification)</p>
+        <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--glass-border);">New to RapidRide? <a
+            href="verify-phone.html" style="color: var(--primary); font-weight: 600;">Create an account</a></p>
       </div>
     </div>
   </div>
@@ -214,7 +230,7 @@
           }
         });
       }
-      
+
       recaptchaVerifier = window.recaptchaVerifier;
       console.log('✅ Invisible reCAPTCHA initialized');
     });
@@ -227,7 +243,7 @@
     // Handle form submission
     document.getElementById('phoneForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const phone = phoneInput.value.trim();
       const fullPhone = '+91' + phone;
 
@@ -242,33 +258,33 @@
 
       try {
         console.log('📱 Sending SMS to:', fullPhone);
-        
+
         // Use the global recaptchaVerifier
         const appVerifier = window.recaptchaVerifier;
-        
+
         confirmationResult = await window.firebaseAuth.signInWithPhoneNumber(
-          fullPhone, 
+          fullPhone,
           appVerifier
         );
 
         console.log('\u2705 SMS sent successfully');
-        
+
         // Store for verification page
         sessionStorage.setItem('phoneNumberForSignIn', fullPhone);
         sessionStorage.setItem('verificationId', confirmationResult.verificationId);
         sessionStorage.setItem('isSignIn', 'true'); // Flag that this is sign-in, not signup
-        
+
         showSuccess('Code sent! Redirecting...');
-        
+
         setTimeout(() => {
-          window.location.href = 'verify-phone.html';
+          window.location.href = 'verify-phone.html?v=2';
         }, 1500);
 
       } catch (error) {
         console.error('❌ SMS error:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
-        
+
         // Reset reCAPTCHA if possible
         if (window.recaptchaWidgetId !== undefined) {
           try {
@@ -311,4 +327,5 @@
     }
   </script>
 </body>
+
 </html>

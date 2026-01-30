@@ -1,8 +1,9 @@
 <!doctype html>
 <html>
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Verify Phone Number — RapidRide</title>
   <link rel="stylesheet" href="css/global.css">
   <style>
@@ -12,6 +13,7 @@
       justify-content: center;
       min-height: 100vh;
     }
+
     .phone-input-wrapper {
       position: relative;
       display: flex;
@@ -23,11 +25,13 @@
       transition: all 0.3s ease;
       margin-bottom: 1.5rem;
     }
+
     .phone-input-wrapper:focus-within {
       border-color: var(--primary);
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
+
     .country-prefix {
       display: flex;
       align-items: center;
@@ -40,10 +44,12 @@
       margin-right: 8px;
       user-select: none;
     }
+
     .country-flag {
       font-size: 24px;
       margin-right: 8px;
     }
+
     .phone-number {
       flex: 1;
       background: transparent;
@@ -55,15 +61,19 @@
       font-weight: 500;
       letter-spacing: 0.5px;
     }
+
     .phone-number::placeholder {
       color: var(--text-muted);
     }
+
     #recaptcha-container {
       display: flex;
       justify-content: center;
       margin: 1.5rem 0;
-      min-height: 10px; /* Minimal for invisible */
+      min-height: 10px;
+      /* Minimal for invisible */
     }
+
     .info-box {
       background: rgba(59, 130, 246, 0.1);
       border-left: 4px solid #3b82f6;
@@ -73,22 +83,27 @@
       font-size: 0.9rem;
       color: var(--text);
     }
-    .error-msg, .success-msg {
+
+    .error-msg,
+    .success-msg {
       padding: 0.75rem;
       border-radius: 8px;
       margin-bottom: 1rem;
       display: none;
     }
+
     .error-msg {
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid #ef4444;
       color: #ef4444;
     }
+
     .success-msg {
       background: rgba(16, 185, 129, 0.1);
       border: 1px solid #10b981;
       color: #10b981;
     }
+
     .step-indicator {
       text-align: center;
       margin-bottom: 2rem;
@@ -97,11 +112,13 @@
       border-radius: 8px;
       border: 1px solid rgba(99, 102, 241, 0.2);
     }
+
     .step-indicator h3 {
       margin: 0;
       color: var(--primary);
       font-size: 1.1rem;
     }
+
     .step-indicator p {
       margin: 0.5rem 0 0 0;
       color: var(--text-muted);
@@ -109,6 +126,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container">
     <div class="glass-card slide-up" style="max-width: 500px; width: 100%; padding: 3rem;">
@@ -139,16 +157,8 @@
             <span class="country-flag">🇮🇳</span>
             <span>+91</span>
           </div>
-          <input 
-            type="tel" 
-            id="phoneNumber" 
-            class="phone-number" 
-            placeholder="9876543210" 
-            maxlength="10" 
-            pattern="[6-9][0-9]{9}"
-            required
-            autofocus
-          >
+          <input type="tel" id="phoneNumber" class="phone-number" placeholder="9876543210" maxlength="10"
+            pattern="[6-9][0-9]{9}" required autofocus>
         </div>
 
         <!-- Invisible reCAPTCHA container -->
@@ -219,7 +229,7 @@
           }
         });
       }
-      
+
       recaptchaVerifier = window.recaptchaVerifier;
       console.log('✅ Invisible reCAPTCHA initialized');
     });
@@ -232,7 +242,7 @@
     // Handle form submission
     document.getElementById('phoneForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const phone = phoneInput.value.trim();
       const fullPhone = '+91' + phone;
 
@@ -247,32 +257,32 @@
 
       try {
         console.log('📱 Sending SMS to:', fullPhone);
-        
+
         // Use the global recaptchaVerifier (invisible)
         const appVerifier = window.recaptchaVerifier;
-        
+
         confirmationResult = await window.firebaseAuth.signInWithPhoneNumber(
-          fullPhone, 
+          fullPhone,
           appVerifier
         );
 
         console.log('✅ SMS sent successfully');
-        
+
         // Store for verification page
         sessionStorage.setItem('phoneNumberForLinking', fullPhone);
         sessionStorage.setItem('verificationId', confirmationResult.verificationId);
-        
+
         showSuccess('Code sent! Redirecting...');
-        
+
         setTimeout(() => {
-          window.location.href = 'verify-link-phone.html';
+          window.location.href = 'verify-link-phone.html?v=2';
         }, 1500);
 
       } catch (error) {
         console.error('❌ SMS error:', error);
         console.error('Error code:', error.code);
         console.error('Error message:', error.message);
-        
+
         sendBtn.disabled = false;
         sendBtn.textContent = 'Send Verification Code';
 
@@ -289,4 +299,5 @@
     });
   </script>
 </body>
+
 </html>
