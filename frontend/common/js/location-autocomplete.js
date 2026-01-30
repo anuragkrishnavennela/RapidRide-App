@@ -721,5 +721,15 @@ function initLocationAutocomplete(inputId, callback) {
 }
 
 // Export globally
-window.initLocationAutocomplete = initLocationAutocomplete;
+// Encapsulated Location Autocomplete
+(function (window) {
+  'use strict';
+
+  const LocationAutocomplete = {
+    init: initLocationAutocomplete
+  };
+
+  window.LocationAutocomplete = LocationAutocomplete;
+
+})(window);
 console.log('✅ Autocomplete module loaded!');

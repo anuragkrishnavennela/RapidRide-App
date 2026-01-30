@@ -3,345 +3,266 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Home — RapidRide</title>
   <link rel="stylesheet" href="../common/css/global.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="../common/js/config.js"></script>
   <style>
-    /* Scoped Dashboard Styles */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 2rem;
-      margin-top: 2rem;
-    }
-
-    @media (max-width: 900px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .recent-ride-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      background: white;
-      border-radius: var(--radius-md);
-      margin-bottom: 1rem;
-      border: 1px solid var(--glass-border);
-      transition: 0.2s;
-    }
-
-    .recent-ride-item:hover {
-      border-color: var(--primary);
-      transform: translateX(5px);
-    }
-
-    .map-preview {
-      width: 100%;
-      height: 300px;
-      border-radius: var(--radius-lg);
+    /* Full Screen Map Layout */
+    body {
       overflow: hidden;
-      margin-top: 1rem;
-      border: 1px solid var(--glass-border);
+      /* Prevent scroll */
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
 
-    #map {
+    .navbar {
+      background: transparent;
+      border-bottom: none;
+      position: absolute;
+      top: 0;
       width: 100%;
-      height: 100%;
+      pointer-events: none;
+      /* Let clicks pass through to map */
+      padding: 1.5rem;
     }
 
-    /* Section Header Alignment */
-    .section-header-row {
+    .navbar-content {
+      pointer-events: auto;
+      /* Re-enable for buttons */
+      width: 100%;
       display: flex;
       justify-content: space-between;
-      align-items: flex-end;
-      margin-bottom: 1.5rem;
+      align-items: center;
     }
 
-    /* Notification Badge Correction */
-    .notification-btn,
-    .track-ride-btn {
-      width: 48px;
-      height: 48px;
+    .brand-pill {
+      background: var(--bg-surface);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-sm);
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .profile-pill {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-surface);
+      border-radius: 50%;
+      box-shadow: var(--shadow-sm);
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      transition: background 0.2s;
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid var(--border);
     }
 
-    .notification-btn:hover,
-    .track-ride-btn:hover {
-      background: rgba(0, 0, 0, 0.05);
+    .profile-pill img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Map Container */
+    .map-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /* Bottom Sheet Booking Panel */
+    .booking-panel {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 450px;
+      background: var(--bg-surface);
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-float);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .current-location-text {
+      color: var(--accent);
+      /* Yellow dot intent */
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .current-location-address {
+      font-size: 1.1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .where-to-btn {
+      background: var(--bg-app);
+      /* Cream bg for input look */
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: 0.2s;
+    }
+
+    .where-to-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .search-icon {
+      font-size: 1.2rem;
+      color: var(--primary);
+      margin-right: 0.75rem;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      .booking-panel {
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        padding-bottom: 2.5rem;
+        /* Safe area */
+        border-bottom: none;
+      }
     }
   </style>
-  <script src="../common/js/config.js"></script>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;" class="brand"
-      onclick="window.location.href='rider_home.html'">
-      <img src="../assets/logo.png" alt="RapidRide" style="height: 32px; display:none;"
-        onerror="this.style.display='none'">
-      <span>RapidRide</span>
-    </div>
-
-    <!-- Right Side Actions -->
-    <div style="display: flex; align-items: center; gap: 1rem;">
-      <div class="track-ride-btn" onclick="openTrackRideModal()" title="Track Active Ride" style="cursor: pointer;">
-        <span style="font-size: 1.5rem;">📍</span>
-      </div>
-      <div class="notification-btn" onclick="openNotifications()" style="cursor: pointer; position: relative;">
-        <span style="font-size: 1.5rem;">🔔</span>
-        <div class="notification-badge" id="notificationBadge"
-          style="display: none; position: absolute; top: 0; right: 0; background: #ef4444; color: white; font-size: 0.7rem; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-          0</div>
-      </div>
-      <div class="profile-btn" onclick="window.location.href='profile.html'"
-        style="cursor: pointer; width: 40px; height: 40px; background: var(--primary); border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-        👤
+  <header class="navbar">
+    <div class="navbar-content">
+      <div class="brand-pill">RapidRide</div>
+      <div class="profile-pill" onclick="window.location.href='profile.html'">
+        <img src="../assets/default-avatar.png" alt="Profile"
+          onerror="this.src='https://ui-avatars.com/api/?name=User&background=random'">
       </div>
     </div>
-  </nav>
+  </header>
 
-  <div class="container fade-in" style="min-height: 60vh;">
-
-    <!-- Welcome Section -->
-    <div style="margin: 3rem 0 2rem 0;">
-      <h1 style="font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.1;">Ready to ride?</h1>
-      <p style="font-size: 1.2rem; color: var(--text-secondary);">Select a service to get started.</p>
-    </div>
-
-    <!-- CAROUSEL: Ways to Ride (Replacing Grid) -->
-    <!-- Contains: Bike, Auto, Cab, Intercity, Shuttle, Pooling, Rentals, Lux -->
-    <div class="carousel-container" style="margin-bottom: 4rem; padding-left: 2px;">
-
-      <!-- Bike -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">🏍️</div>
-        <h3>Bike</h3>
-        <p>Fastest</p>
-      </div>
-
-      <!-- Auto -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">🛺</div>
-        <h3>Auto</h3>
-        <p>Affordable</p>
-      </div>
-
-      <!-- Cab -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">🚕</div>
-        <h3>Cab</h3>
-        <p>Comfort</p>
-      </div>
-
-      <!-- Intercity -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">🏙️</div>
-        <h3>Intercity</h3>
-        <p>Outstation</p>
-      </div>
-
-      <!-- Shuttle -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">🚐</div>
-        <h3>Shuttle</h3>
-        <p>Fixed Route</p>
-      </div>
-
-      <!-- Pooling -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">👥</div>
-        <h3>Pooling</h3>
-        <p>Shared</p>
-      </div>
-
-      <!-- Rental -->
-      <div class="carousel-card" onclick="window.location.href='book_ride.html'">
-        <div class="carousel-icon">⏳</div>
-        <h3>Rentals</h3>
-        <p>Hourly</p>
-      </div>
-
-    </div>
-
-    <!-- Dashboard Grid -->
-    <div class="dashboard-grid">
-      <!-- Main Panel: Map -->
-      <div class="glass-card slide-up"
-        style="animation-delay: 0.1s; padding: 0; overflow: hidden; border: 1px solid var(--glass-border);">
-        <div
-          style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0;">Around You</h3>
-          <span style="font-size: 0.9rem; color: var(--text-muted);">Live View</span>
-        </div>
-        <div style="width: 100%; height: 350px;">
-          <div id="map"></div>
-        </div>
-        <div style="padding: 1.5rem; text-align: center;">
-          <button class="btn btn-primary" style="width: 100%;" onclick="window.location.href='book_ride.html'">
-            Book Now
-          </button>
-        </div>
-      </div>
-
-      <!-- Side Panel: Recent / Saved -->
-      <div class="glass-card slide-up" style="animation-delay: 0.2s;">
-        <div class="section-header-row">
-          <h3 style="margin:0;">Recent</h3>
-          <a href="#" style="font-size: 0.9rem; font-weight: 600; color: var(--secondary);">View All</a>
-        </div>
-
-        <div id="recentRidesList">
-          <div class="text-center" style="padding: 1rem; color: var(--text-muted); opacity: 0.7;">
-            No recent rides.
-          </div>
-        </div>
-
-        <div style="margin-top: 2rem;">
-          <h4 style="margin-bottom: 1rem; color: var(--text-secondary);">Saved Places</h4>
-          <div class="recent-ride-item">
-            <span style="font-size: 1.5rem;">🏠</span>
-            <div>
-              <div style="font-weight: 700;">Home</div>
-              <div style="font-size: 0.85rem; color: var(--text-muted);">Add address</div>
-            </div>
-          </div>
-          <div class="recent-ride-item">
-            <span style="font-size: 1.5rem;">🏢</span>
-            <div>
-              <div style="font-weight: 700;">Work</div>
-              <div style="font-size: 0.85rem; color: var(--text-muted);">Add address</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="map-wrapper">
+    <div id="map"></div>
   </div>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand" style="text-align: left;">
-          <h3>RapidRide</h3>
-          <p>Simplifying urban mobility<br>for everyone.</p>
-        </div>
-        <div style="text-align: left;">
-          <h4>Company</h4>
-          <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Careers</a></li>
-          </ul>
-        </div>
-        <div style="text-align: left;">
-          <h4>Services</h4>
-          <ul>
-            <li><a href="#">Ride</a></li>
-            <li><a href="#">Drive</a></li>
-          </ul>
-        </div>
-        <div style="text-align: left;">
-          <h4>Support</h4>
-          <ul>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Safety</a></li>
-          </ul>
-        </div>
+  <div class="booking-panel slide-up">
+    <div>
+      <div class="current-location-text">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <circle cx="6" cy="6" r="6" fill="#F2C94C" />
+        </svg>
+        Current Location
       </div>
-      <div class="text-center"
-        style="margin-top: 3rem; padding-top: 3rem; border-top: 1px solid #eee; color: var(--text-muted); font-size: 0.9rem;">
-        &copy; 2025 RapidRide. All rights reserved.
-      </div>
+      <div class="current-location-address" id="currentAddress">Locating you...</div>
     </div>
-  </footer>
 
-  <!-- Modals -->
-  <div class="notification-modal" id="notificationModal">
-    <div class="notification-modal-content glass-card">
-      <div class="notification-header">
-        <h3>Notifications</h3>
-        <div class="notification-close" onclick="closeNotifications()">✕</div>
-      </div>
-      <div class="notification-list" id="notificationList">
-        <div class="notification-empty">
-          <div class="notification-empty-icon">🔔</div>
-          <p>No notifications yet</p>
-        </div>
-      </div>
+    <div class="where-to-btn" onclick="window.location.href='book_ride.html'">
+      <span style="display: flex; align-items: center;">
+        <span class="search-icon">🔍</span>
+        Where to?
+      </span>
+      <span
+        style="background: #E8E2D4; padding: 0.25rem 0.6rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700;">NOW</span>
     </div>
-  </div>
 
-  <div class="track-ride-modal" id="trackRideModal">
-    <div class="track-ride-modal-content glass-card">
-      <div class="track-ride-header">
-        <h3>Current Ride</h3>
-        <div class="track-ride-close" onclick="closeTrackRideModal()">✕</div>
-      </div>
-      <div class="track-ride-body" id="trackRideBody">
-        <!-- Dynamic Content -->
-      </div>
-    </div>
+    <button class="btn btn-primary w-full" onclick="window.location.href='book_ride.html'"
+      style="font-size: 1.1rem; padding: 1.1rem;">
+      Choose Ride
+    </button>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  <script src="../common/js/rider.js"></script>
+  <!-- Global Auth/Rider Scripts -->
+  <script src="../common/js/auth.js"></script>
+
   <script>
-    const map = L.map('map', { zoomControl: false }).setView([17.3850, 78.4867], 17);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO'
+    // Initialize Map
+    const map = L.map('map', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([17.3850, 78.4867], 15);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 20
     }).addTo(map);
 
-    // Get user's current location
+    // Get live location
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log('✅ Location detected:', latitude, longitude);
+      navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
 
-          // Center map on user's location
-          map.setView([latitude, longitude], 17);
+        map.setView([lat, lng], 16);
 
-          // Add marker for user's location
-          const userIcon = L.divIcon({
-            html: '<div style="font-size: 28px;">📍</div>',
-            className: 'user-location',
-            iconSize: [30, 30]
+        // Custom Pulse Marker
+        const pulseIcon = L.divIcon({
+          className: 'css-icon',
+          html: '<div style="width: 16px; height: 16px; background: #1C1917; border: 3px solid white; border-radius: 50%; box-shadow: 0 4px 10px rgba(0,0,0,0.3);"></div>',
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+
+        L.marker([lat, lng], { icon: pulseIcon }).addTo(map);
+
+        // Reverse Geocode (Simple Mock or Fetch)
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(res => res.json())
+          .then(data => {
+            const parts = (data.display_name || "").split(',');
+            // Show first 2 parts
+            document.getElementById('currentAddress').textContent = parts.slice(0, 2).join(', ');
+          })
+          .catch(() => {
+            document.getElementById('currentAddress').textContent = "Unknown Location";
           });
-          L.marker([latitude, longitude], { icon: userIcon }).addTo(map)
-            .bindPopup('You are here')
-            .openPopup();
-        },
-        (error) => {
-          console.warn('⚠️ Location access denied or unavailable:', error.message);
-          // Keep default location if permission denied
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      );
-    } else {
-      console.warn('⚠️ Geolocation not supported');
+
+      }, err => {
+        console.warn("Location access denied");
+        document.getElementById('currentAddress').textContent = "Location access denied";
+      });
     }
 
-    const carIcon = L.divIcon({
-      html: '<div style="font-size: 24px;">🚖</div>',
-      className: 'dummy-car',
-      iconSize: [30, 30]
+    // Check Auth
+    Auth.populateFromServer().then(user => {
+      if (!user) {
+        // Optional: Redirect to login if strict
+        // window.location.href = '../common/login.html';
+      }
     });
-    L.marker([17.3950, 78.4967], { icon: carIcon }).addTo(map);
-    L.marker([17.3750, 78.4767], { icon: carIcon }).addTo(map);
+
   </script>
 </body>
 

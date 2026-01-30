@@ -3,1088 +3,150 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Profile — RapidRide</title>
+  <title>Settings — RapidRide</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../common/css/global.css">
+  <script src="../common/js/config.js"></script>
   <style>
-    body {
-      padding: 0;
-      margin: 0;
-      min-height: 100vh;
-    }
-
-    .topbar {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--glass-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .topbar-left {
-      justify-self: start;
-    }
-
-    .topbar-center {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-size: 1.2rem;
-      font-weight: 700;
-      justify-self: center;
-    }
-
-    .topbar-right {
-      justify-self: end;
-    }
-
-    .mini-logo {
-      height: 40px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 2rem 1rem;
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
+    .profile-header-card {
+      background: var(--bg-surface);
       padding: 2rem;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
       margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
     }
 
     .profile-avatar {
-      width: 100px;
-      height: 100px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
+      width: 64px;
+      height: 64px;
+      background: var(--border);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
       font-weight: 700;
-      color: white;
-      flex-shrink: 0;
-    }
-
-    .profile-info {
-      flex: 1;
-    }
-
-    .profile-name {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-email {
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
-    }
-
-    .profile-stats {
-      display: flex;
-      gap: 2rem;
-      margin-top: 1rem;
-    }
-
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stat-value {
       font-size: 1.5rem;
-      font-weight: 700;
       color: var(--primary);
     }
 
-    .stat-label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
+    .settings-list {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
-    .section {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .section-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .info-grid {
-      display: grid;
-      gap: 1.5rem;
-    }
-
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .info-label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .info-value {
-      font-size: 1.1rem;
-      color: var(--text);
-      padding: 0.8rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
+    .setting-item {
+      padding: 1.25rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-    }
-
-    .edit-icon {
+      border-bottom: 1px solid var(--border);
       cursor: pointer;
-      opacity: 0.6;
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-      padding: 0.3rem;
+      transition: 0.2s;
     }
 
-    .edit-icon:hover {
-      opacity: 1;
+    .setting-item:last-child {
+      border-bottom: none;
     }
 
-    .edit-icon svg {
-      width: 18px;
-      height: 18px;
-      stroke: var(--primary);
+    .setting-item:hover {
+      background: #fafafa;
     }
 
-    .info-value input {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--primary);
-      color: var(--text);
-      padding: 0.5rem;
-      border-radius: 6px;
-      font-size: 1.1rem;
-      outline: none;
-    }
-
-    .info-value input:focus {
-      border-color: var(--accent);
-    }
-
-    .save-icon {
-      cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-      padding: 0.3rem;
-      color: #10b981;
-    }
-
-    .save-icon:hover {
-      opacity: 1;
-    }
-
-    .cancel-icon {
-      cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-      padding: 0.3rem;
-      color: #ef4444;
-    }
-
-    .cancel-icon:hover {
-      opacity: 1;
-    }
-
-    .address-list {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .address-card {
+    .setting-label {
+      font-weight: 500;
+      font-size: 1.05rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      padding: 1.2rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--glass-border);
-      border-radius: 12px;
     }
 
-    .address-icon {
-      width: 50px;
-      height: 50px;
-      background: rgba(99, 102, 241, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .address-details {
-      flex: 1;
-    }
-
-    .address-label {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-
-    .address-text {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .btn-edit {
-      background: rgba(99, 102, 241, 0.2);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      color: var(--primary);
-    }
-
-    .btn-edit:hover {
-      background: rgba(99, 102, 241, 0.3);
-    }
-
-    .preferences-grid {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .pref-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 8px;
-    }
-
-    .pref-label {
-      font-weight: 600;
-    }
-
-    .pref-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .toggle-switch {
-      position: relative;
-      width: 50px;
-      height: 28px;
-      flex-shrink: 0;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.1);
-      transition: 0.3s;
-      border-radius: 34px;
-      border: 1px solid var(--glass-border);
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background: white;
-      transition: 0.3s;
-      border-radius: 50%;
-    }
-
-    .toggle-switch input:checked+.toggle-slider {
-      background: var(--primary);
-    }
-
-    .toggle-switch input:checked+.toggle-slider:before {
-      transform: translateX(22px);
-    }
-
-    .danger-zone {
-      margin-top: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #ef4444;
-    }
-
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-logout {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #ef4444;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-logout:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: rgba(239, 68, 68, 0.6);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-    }
-
-    .btn-logout:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
-    }
-
-    .avatar-container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .avatar-edit-btn {
-      position: absolute;
-      bottom: 5px;
-      right: 5px;
-      width: 35px;
-      height: 35px;
-      background: var(--primary);
-      border: 3px solid var(--glass-bg);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      z-index: 10;
-    }
-
-    .avatar-edit-btn:hover {
-      background: var(--accent);
-      transform: scale(1.1);
-    }
-
-    .avatar-edit-btn svg {
-      width: 18px;
-      height: 18px;
-      stroke: white;
-    }
-
-    .avatar-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .avatar-modal-content {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 500px;
-      width: 90%;
-    }
-
-    .avatar-modal-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 2rem;
+    .setting-icon {
+      color: var(--text-secondary);
+      width: 24px;
       text-align: center;
     }
 
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+    .chevron {
+      color: var(--border-focus);
+      opacity: 0.3;
     }
 
-    .avatar-option {
-      aspect-ratio: 1;
-      border: 3px solid var(--glass-border);
-      border-radius: 16px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .avatar-option:hover {
-      border-color: var(--primary);
-      transform: scale(1.05);
-    }
-
-    .avatar-option.selected {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-    }
-
-    .avatar-option img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .avatar-modal-buttons {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .avatar-modal-buttons button {
-      flex: 1;
-    }
-
-    .profile-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    .edit-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 10000;
-    }
-
-    .edit-modal-content {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 2.5rem;
-      max-width: 450px;
-      width: 90%;
-    }
-
-    .edit-modal-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 2rem;
-    }
-
-    .edit-form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .edit-form-label {
-      display: block;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 0.5rem;
+    /* Danger Zone */
+    .danger-btn {
+      color: var(--error);
+      text-align: center;
+      padding: 1.5rem;
       font-weight: 600;
-    }
-
-    .edit-form-input {
-      width: 100%;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.05);
-      border: 2px solid var(--glass-border);
-      border-radius: 12px;
-      color: var(--text);
-      font-size: 1rem;
-      outline: none;
-      transition: all 0.3s ease;
-      box-sizing: border-box;
-    }
-
-    .edit-form-input:focus {
-      border-color: var(--primary);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .edit-modal-buttons {
-      display: flex;
-      gap: 1rem;
+      cursor: pointer;
       margin-top: 2rem;
     }
 
-    .edit-modal-buttons button {
-      flex: 1;
+    body {
+      background: var(--bg-app);
     }
   </style>
-  <script src="../common/js/config.js"></script>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="topbar-left">
-      <a href="rider_home.html" class="btn btn-secondary">← Back</a>
-    </div>
-    <div class="topbar-center">
-      <img src="../assets/logo.png" class="mini-logo" alt="RapidRide" onerror="this.style.display='none'">
-      <span>My Profile</span>
-    </div>
-    <div class="topbar-right">
-      <button class="btn-logout" onclick="logout()">
-        <span>Logout</span>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-          <polyline points="16 17 21 12 16 7"></polyline>
-          <line x1="21" y1="12" x2="9" y2="12"></line>
-        </svg>
-      </button>
-    </div>
+
+  <header class="navbar">
+    <div class="back-btn" onclick="window.location.href='rider_home.html'" style="cursor: pointer; font-weight: 700;">
+      Close</div>
+    <div class="brand">Account</div>
+    <div style="width: 40px;"></div> <!-- Spacer -->
   </header>
 
-  <main class="container">
-    <!-- Profile Header -->
-    <div class="profile-header">
-      <div class="avatar-container">
-        <div class="profile-avatar" id="profileAvatar">?</div>
-        <button class="avatar-edit-btn" onclick="showAvatarModal()" title="Change avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-        </button>
-      </div>
-      <div class="profile-info">
-        <div class="profile-name" id="profileName">Loading...</div>
-        <div class="profile-email" id="profileEmail">Loading...</div>
-        <div class="profile-stats">
-          <div class="stat-item">
-            <span class="stat-value" id="profileTotalRides">0</span>
-            <span class="stat-label">Total Rides</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="profileTotalSpent">₹0</span>
-            <span class="stat-label">Total Spent</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Personal Information -->
-    <section class="section">
-      <h2 class="section-title">Personal Information</h2>
-
-      <div class="info-grid">
-        <div class="info-item">
-          <span class="info-label">Full Name</span>
-          <div class="info-value" id="nameContainer">
-            <span id="infoName">—</span>
-            <span class="edit-icon" onclick="toggleEdit('name')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Email Address</span>
-          <div class="info-value" id="emailContainer">
-            <span id="infoEmail">—</span>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Phone Number</span>
-          <div class="info-value" id="phoneContainer">
-            <span id="infoPhone">—</span>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <span class="info-label">Member Since</span>
-          <div class="info-value" id="infoMemberSince">—</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Danger Zone -->
-    <div class="danger-zone">
-      <h3 style="color: #ef4444; margin-bottom: 1rem;">Danger Zone</h3>
-      <div style="display: flex; gap: 1rem;">
-        <button class="btn btn-danger" onclick="deactivateAccount()">Deactivate Account</button>
-        <button class="btn btn-danger" onclick="deleteAccount()">Delete Account</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- Edit Personal Info Modal -->
-  <div class="edit-modal" id="editModal">
-    <div class="edit-modal-content">
-      <h3 class="edit-modal-title" id="editModalTitle">Edit Information</h3>
-      <div class="edit-form-group">
-        <label class="edit-form-label" id="editFieldLabel">Field</label>
-        <input type="text" class="edit-form-input" id="editFieldInput" />
-      </div>
-      <div class="edit-modal-buttons">
-        <button class="btn btn-secondary" onclick="hideEditModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveEditedField()">Save Changes</button>
-      </div>
+  <div class="profile-header-card">
+    <div class="profile-avatar" id="avatarDisplay">?</div>
+    <div>
+      <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;" id="userName">Loading...</h2>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;" id="userEmail">...</p>
     </div>
   </div>
 
-  <!-- Avatar Selection Modal -->
-  <div class="avatar-modal" id="avatarModal">
-    <div class="avatar-modal-content">
-      <h3 class="avatar-modal-title">Choose Your Avatar</h3>
-      <div class="avatar-grid">
-        <div class="avatar-option" data-avatar="1" onclick="selectAvatar(1)">
-          <img src="../assets/1.png" alt="Avatar 1">
-        </div>
-        <div class="avatar-option" data-avatar="2" onclick="selectAvatar(2)">
-          <img src="../assets/2.png" alt="Avatar 2">
-        </div>
-        <div class="avatar-option" data-avatar="3" onclick="selectAvatar(3)">
-          <img src="../assets/3.png" alt="Avatar 3">
-        </div>
-        <div class="avatar-option" data-avatar="4" onclick="selectAvatar(4)">
-          <img src="../assets/4.png" alt="Avatar 4">
-        </div>
-      </div>
-      <div class="avatar-modal-buttons">
-        <button class="btn btn-secondary" onclick="hideAvatarModal()">Cancel</button>
-        <button class="btn btn-primary" onclick="saveAvatar()">Save Avatar</button>
-      </div>
+  <div class="settings-list">
+    <div class="setting-item">
+      <div class="setting-label"><span class="setting-icon">💳</span> Payment Methods</div>
+      <div class="chevron">›</div>
+    </div>
+    <div class="setting-item" onclick="window.location.href='trips.html'">
+      <div class="setting-label"><span class="setting-icon">🕒</span> Ride History</div>
+      <div class="chevron">›</div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-label"><span class="setting-icon">⭐</span> Saved Places</div>
+      <div class="chevron">›</div>
+    </div>
+    <div class="setting-item" onclick="window.location.href='../driver/driver_home.html'">
+      <div class="setting-label"><span class="setting-icon">🚗</span> Drive with RapidRide</div>
+      <div class="chevron">›</div>
+    </div>
+    <div class="setting-item">
+      <div class="setting-label"><span class="setting-icon">🛡️</span> Support</div>
+      <div class="chevron">›</div>
     </div>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="../common/js/firebase-config.js"></script>
-  <script src="../common/js/config.js"></script>
+  <div class="danger-btn" onclick="Auth.logout().then(() => window.location.href='../common/login.html')">
+    Log Out
+  </div>
+
   <script src="../common/js/auth.js"></script>
   <script>
-    // Load user data with Firebase auth
-    firebase.auth().onAuthStateChanged(async (user) => {
-      console.log('🔐 Profile auth state changed:', user ? user.uid : 'null');
-
-      if (!user) {
-        console.warn('❌ No Firebase user, redirecting to signin');
-        window.location.href = '../common/signin.html';
-        return;
-      }
-
-      try {
-        console.log('📡 Fetching user data from backend...');
-        // Fetch user data from backend
-        const response = await apiFetch('/auth/me');
-        console.log('📥 Backend response:', response);
-
-        if (!response.ok) {
-          console.error('❌ Backend returned error:', response.status, response.data);
-          window.location.href = '../common/signin.html';
-          return;
-        }
-
-        if (!response.data || !response.data.user) {
-          console.error('❌ No user data in response:', response.data);
-          window.location.href = '../common/signin.html';
-          return;
-        }
-
-        console.log('✅ User data loaded:', response.data.user.name);
-        const userData = response.data.user;
-
-        // Set user information
-        if (userData.name) {
-          document.getElementById('profileName').textContent = userData.name;
-          document.getElementById('infoName').textContent = userData.name;
-          document.getElementById('profileAvatar').textContent = userData.name.charAt(0).toUpperCase();
-        }
-
-        if (userData.email) {
-          document.getElementById('profileEmail').textContent = userData.email;
-          document.getElementById('infoEmail').textContent = userData.email;
-        }
-
-        if (userData.phone) {
-          document.getElementById('infoPhone').textContent = userData.phone;
-        } else {
-          document.getElementById('infoPhone').textContent = 'Not provided';
-        }
-
-        // Set member since date
-        console.log('User createdAt:', userData.createdAt);
-        if (userData.createdAt) {
-          const date = new Date(userData.createdAt);
-          const formattedDate = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-          console.log('Formatted date:', formattedDate);
-          document.getElementById('infoMemberSince').textContent = formattedDate;
-        } else {
-          console.log('No createdAt field found in user data');
-          document.getElementById('infoMemberSince').textContent = 'December 2025';
-        }
-
-        // Load stats from server
-        await loadProfileStats();
-      } catch (error) {
-        console.error('Failed to load user:', error);
-        window.location.href = '../common/signin.html';
+    // Simple load logic
+    Auth.populateFromServer().then(user => {
+      if (user) {
+        document.getElementById('userName').textContent = user.name || 'User';
+        document.getElementById('userEmail').textContent = user.email || '';
+        document.getElementById('avatarDisplay').textContent = (user.name || 'U').charAt(0).toUpperCase();
+      } else {
+        document.getElementById('userName').textContent = "Guest";
+        document.getElementById('userEmail').textContent = "Sign in to manage account";
       }
     });
-
-    async function loadProfileStats() {
-      try {
-        const response = await apiFetch('/auth/stats');
-
-        if (response.ok && response.data) {
-          const stats = response.data.stats;
-          document.getElementById('profileTotalRides').textContent = stats.completedRides || 0;
-          document.getElementById('profileTotalSpent').textContent = `₹${stats.totalEarnings || 0}`;
-        }
-      } catch (error) {
-        console.log('Stats not available yet');
-      }
-    }
-
-    let currentEditField = null;
-
-    function toggleEdit(fieldType) {
-      currentEditField = fieldType;
-      const fieldName = fieldType.charAt(0).toUpperCase() + fieldType.slice(1);
-      const valueSpan = document.getElementById(`info${fieldName}`);
-      const currentValue = valueSpan.textContent;
-      const inputValue = (currentValue === '—' || currentValue === 'Not provided') ? '' : currentValue;
-
-      // Set modal content
-      document.getElementById('editModalTitle').textContent = `Edit ${fieldName}`;
-      document.getElementById('editFieldLabel').textContent = fieldName;
-      document.getElementById('editFieldInput').value = inputValue;
-      document.getElementById('editFieldInput').type = fieldType === 'email' ? 'email' : 'text';
-
-      // Show modal
-      document.getElementById('editModal').style.display = 'flex';
-
-      // Focus input
-      setTimeout(() => {
-        const input = document.getElementById('editFieldInput');
-        input.focus();
-        input.select();
-      }, 100);
-    }
-
-    function hideEditModal() {
-      document.getElementById('editModal').style.display = 'none';
-      currentEditField = null;
-    }
-
-    // Keyboard support for edit modal
-    document.addEventListener('keydown', (e) => {
-      const editModal = document.getElementById('editModal');
-      if (editModal.style.display === 'flex') {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const saveBtn = editModal.querySelector('.btn-primary');
-          saveBtn.classList.add('btn-active');
-          setTimeout(() => saveBtn.classList.remove('btn-active'), 200);
-          saveEditedField();
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          const cancelBtn = editModal.querySelector('.btn-secondary');
-          cancelBtn.classList.add('btn-active');
-          setTimeout(() => cancelBtn.classList.remove('btn-active'), 200);
-          hideEditModal();
-        }
-      }
-    });
-
-    async function saveEditedField() {
-      if (!currentEditField) return;
-
-      const input = document.getElementById('editFieldInput');
-      const newValue = input.value.trim();
-
-      if (!newValue) {
-        alert('Value cannot be empty');
-        return;
-      }
-
-      try {
-        const fieldName = currentEditField.charAt(0).toUpperCase() + currentEditField.slice(1);
-
-        // API call to update user profile
-        const response = await apiFetch('/auth/profile', {
-          method: 'PUT',
-          body: { [currentEditField]: newValue }
-        });
-
-        if (!response.ok) {
-          throw new Error(response.data?.error || 'Failed to update profile');
-        }
-
-        // Update the UI
-        document.getElementById(`info${fieldName}`).textContent = newValue;
-
-        // Also update profile header if it's the name
-        if (currentEditField === 'name') {
-          document.getElementById('profileName').textContent = newValue;
-          const savedAvatar = null /* avatar now in DB */;
-          if (!savedAvatar) {
-            document.getElementById('profileAvatar').textContent = newValue.charAt(0).toUpperCase();
-          }
-        }
-
-        console.log(`Updated ${currentEditField} to: ${newValue}`);
-        hideEditModal();
-      } catch (error) {
-        console.error(`Failed to update ${currentEditField}:`, error);
-        alert('Failed to update. Please try again.');
-      }
-    }
-
-    function deactivateAccount() {
-      if (confirm('Are you sure you want to deactivate your account? You can reactivate it later.')) {
-        alert('Account deactivation initiated...');
-      }
-    }
-
-    function deleteAccount() {
-      if (confirm('⚠️ WARNING: This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
-        alert('Account deletion initiated...');
-      }
-    }
-
-    function logout() {
-      showLogoutModal();
-    }
-
-    // Avatar selection
-    let selectedAvatarId = null;
-
-    function showAvatarModal() {
-      document.getElementById('avatarModal').style.display = 'flex';
-      // Get current avatar from user data or default
-      const currentAvatar = window.currentUser?.avatar || '1';
-      selectedAvatarId = currentAvatar;
-      // Highlight current selection
-      document.querySelectorAll('.avatar-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.avatar === currentAvatar);
-      });
-    }
-
-    function hideAvatarModal() {
-      document.getElementById('avatarModal').style.display = 'none';
-    }
-
-    function selectAvatar(id) {
-      selectedAvatarId = id.toString();
-      document.querySelectorAll('.avatar-option').forEach(opt => {
-        opt.classList.toggle('selected', opt.dataset.avatar === selectedAvatarId);
-      });
-    }
-
-    async function saveAvatar() {
-      if (!selectedAvatarId) return;
-
-      try {
-        const response = await apiFetch('/auth/avatar', {
-          method: 'PUT',
-          body: { avatar: selectedAvatarId }
-        });
-
-        if (response.ok && response.data && response.data.success) {
-          // Update profile avatar display
-          updateAvatarDisplay(selectedAvatarId);
-          if (window.currentUser) {
-            window.currentUser.avatar = selectedAvatarId;
-          }
-        } else {
-          alert('Failed to update avatar');
-        }
-      } catch (error) {
-        console.error('Error saving avatar:', error);
-        alert('Failed to update avatar');
-      }
-
-      hideAvatarModal();
-    }
-
-    function updateAvatarDisplay(avatarId) {
-      const avatarDiv = document.getElementById('profileAvatar');
-      avatarDiv.innerHTML = `<img src="../assets/${avatarId}.png" alt="Avatar">`;
-    }
-
-    // Load saved avatar on page load
-    function loadUserAvatar() {
-      const savedAvatar = window.currentUser?.avatar || '1';
-      updateAvatarDisplay(savedAvatar);
-    }
-
-    // Call after user data is loaded
-    window.addEventListener('load', () => {
-      setTimeout(loadUserAvatar, 500);
-    })
-
-    // Custom logout modal implementation
-    function showLogoutModal() {
-      const modal = document.getElementById('logout-modal') || createLogoutModal();
-      modal.style.display = 'flex';
-
-      // Focus the cancel button for keyboard access (Escape is default action)
-      setTimeout(() => {
-        const cancelBtn = modal.querySelector('.btn-secondary');
-        if (cancelBtn) cancelBtn.focus();
-      }, 100);
-
-      // Add keyboard listener
-      document.addEventListener('keydown', handleLogoutModalKeydown);
-    }
-
-    function handleLogoutModalKeydown(e) {
-      const modal = document.getElementById('logout-modal');
-      if (!modal || modal.style.display === 'none') return;
-
-      if (e.key === 'Enter' || e.keyCode === 13) {
-        e.preventDefault();
-        e.stopPropagation();
-        const logoutBtn = modal.querySelector('.btn-danger');
-        if (logoutBtn) {
-          // Remove focus from cancel button
-          document.activeElement.blur();
-          // Highlight logout button
-          logoutBtn.style.transform = 'scale(0.95)';
-          logoutBtn.style.opacity = '0.8';
-          logoutBtn.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.4)';
-          setTimeout(() => {
-            logoutBtn.style.transform = '';
-            logoutBtn.style.opacity = '';
-            logoutBtn.style.boxShadow = '';
-          }, 150);
-        }
-        setTimeout(confirmLogout, 150);
-      } else if (e.key === 'Escape' || e.keyCode === 27) {
-        e.preventDefault();
-        e.stopPropagation();
-        const cancelBtn = modal.querySelector('.btn-secondary');
-        if (cancelBtn) {
-          cancelBtn.style.transform = 'scale(0.95)';
-          cancelBtn.style.opacity = '0.8';
-          cancelBtn.style.boxShadow = '0 0 0 3px rgba(255, 255, 255, 0.2)';
-          setTimeout(() => {
-            cancelBtn.style.transform = '';
-            cancelBtn.style.opacity = '';
-            cancelBtn.style.boxShadow = '';
-          }, 150);
-        }
-        setTimeout(hideLogoutModal, 150);
-      }
-    }
-
-    function createLogoutModal() {
-      const modal = document.createElement('div');
-      modal.id = 'logout-modal';
-      modal.style.cssText = `
-        position: fixed;
-        inset: 0;
-        background: rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(8px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-      `;
-
-      modal.innerHTML = `
-        <div style="
-          background: var(--glass-bg);
-          border: 1px solid var(--glass-border);
-          border-radius: 16px;
-          padding: 2rem;
-          max-width: 400px;
-          width: 90%;
-          text-align: center;
-        ">
-          <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Confirm Logout</h3>
-          <p style="color: var(--text-muted); margin-bottom: 2rem;">
-            Are you sure you want to end your session?
-          </p>
-          <div style="display: flex; gap: 1rem; justify-content: center;">
-            <button onclick="hideLogoutModal()" class="btn btn-secondary" style="flex: 1;">
-              Cancel
-            </button>
-            <button onclick="confirmLogout()" class="btn btn-danger" style="flex: 1;">
-              Logout
-            </button>
-          </div>
-        </div>
-      `;
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) hideLogoutModal();
-      });
-
-      document.body.appendChild(modal);
-      return modal;
-    }
-
-    function hideLogoutModal() {
-      const modal = document.getElementById('logout-modal');
-      if (modal) modal.style.display = 'none';
-      // Remove keyboard listener
-      document.removeEventListener('keydown', handleLogoutModalKeydown);
-    }
-
-    async function confirmLogout() {
-      hideLogoutModal();
-      try {
-        await Auth.logout();
-      } catch (e) {
-        console.error('Logout error:', e);
-      }
-      window.location.href = '../common/signin.html';
-    }
   </script>
 </body>
 
